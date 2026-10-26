@@ -208,16 +208,44 @@
   });
 
   fullButton.addEventListener("click", async () => {
-    try {
-      if (player.requestFullscreen) {
-        await player.requestFullscreen();
-      } else {
-        alert("Use the fullscreen button inside the YouTube video player.");
-      }
-    } catch (_) {
-      alert("If browser fullscreen is unavailable, use YouTube's own fullscreen control.");
-    }
-  });
+try {
+// Enter fullscreen mode
+if (!document.fullscreenElement) {
+if (player.requestFullscreen) {
+await player.requestFullscreen();
+} else if (player.webkitRequestFullscreen) {
+player.webkitRequestFullscreen();
+} else {
+alert("Fullscreen isn't supported here. Please use YouTube's fullscreen button.");
+return;
+}
+}
+
+// Request landscape orientation where supported
+if (screen.orientation && screen.orientation.lock) {
+  try {
+    await screen.orientation.lock("landscape");
+  } catch (_) {
+    // Some mobile browsers don't allow websites to lock orientation.
+    // Users can enable Auto-rotate on their phones.
+  }
+}
+
+} catch (_) {
+alert("Please use YouTube's fullscreen button and enable Auto-rotate on your phone.");
+}
+});
+
+// Restore normal orientation when leaving fullscreen
+document.addEventListener("fullscreenchange", async () => {
+if (!document.fullscreenElement && screen.orientation && screen.orientation.unlock) {
+try {
+screen.orientation.unlock();
+} catch (_) {
+// Orientation unlocking isn't supported in every browser.
+}
+}
+});
 
   // Billboard elements.
   const backdrop = $("featured-backdrop");
