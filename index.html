@@ -4,79 +4,162 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080808">
-  <meta name="description" content="ZIRIGO Cinema — original African stories, films and shorts from ZIRIGO Media.">
+  <meta name="description" content="ZIRIGO — original African stories, films and shorts from ZIRIGO Media.">
   <title>ZIRIGO | Stories That Stay With You</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/zirigo-logo.png">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
   <header class="topbar">
-    <a class="brand" href="#home" aria-label="ZIRIGO Cinema home">
+    <a class="brand" href="#home" aria-label="ZIRIGO home">
       <img src="assets/zirigo-logo.png" alt="ZIRIGO logo">
       <span>ZIRIGO</span>
     </a>
+
     <nav aria-label="Main navigation">
       <a href="#home">Home</a>
+      <a href="#featured">Featured</a>
       <a href="#latest">Films</a>
       <a href="#about">About</a>
-      <a class="subscribe" href="https://www.youtube.com/@zirigomedia?sub_confirmation=1" target="_blank" rel="noopener">Subscribe ↗</a>
+      <a class="subscribe"
+         href="https://www.youtube.com/@zirigomedia?sub_confirmation=1"
+         target="_blank" rel="noopener">Subscribe ↗</a>
     </nav>
   </header>
 
   <main id="home">
+
     <section class="hero">
       <div class="hero-content">
         <p class="eyebrow"><span class="dot"></span> INDEPENDENT AFRICAN CINEMA</p>
         <h1>Stories that<br><span>stay with you.</span></h1>
-        <p class="hero-copy">Discover original films, short stories and creative work from ZIRIGO Media.</p>
+        <p class="hero-copy">
+          Discover original films, short stories and creative work from ZIRIGO Media.
+        </p>
         <div class="hero-actions">
-          <a class="button button-gold" href="#latest">Explore films <span>▶</span></a>
-          <a class="button button-outline" href="https://www.youtube.com/@zirigomedia" target="_blank" rel="noopener">Visit our YouTube ↗</a>
+          <a class="button button-gold" href="#featured">Explore films ▶</a>
+          <a class="button button-outline"
+             href="https://www.youtube.com/@zirigomedia"
+             target="_blank" rel="noopener">Visit our YouTube ↗</a>
         </div>
-        <p class="fineprint">Watch through YouTube's official player. Eligible views may count toward YouTube statistics.</p>
+        <p class="fineprint">Films play through YouTube's embedded player.</p>
       </div>
+
       <div class="hero-mark" aria-hidden="true">
         <div class="halo"></div>
         <img src="assets/zirigo-logo.png" alt="">
       </div>
     </section>
 
+    <!-- FEATURED PROMOTIONAL BILLBOARD -->
+    <section class="featured-section" id="featured"
+             aria-label="Featured film promotions">
+
+      <div class="featured-backdrop" id="featured-backdrop"></div>
+      <div class="featured-shade"></div>
+
+      <div class="featured-inner">
+        <div class="featured-copy">
+          <p class="eyebrow"><span class="dot"></span> FEATURED ON ZIRIGO</p>
+          <p class="featured-status" id="featured-status">FEATURED FILM</p>
+
+          <h2 id="featured-title">Discover your next story</h2>
+
+          <p id="featured-description" class="featured-description">
+            Discover original stories from ZIRIGO and our creative partners.
+          </p>
+
+          <div class="featured-actions">
+            <button type="button" class="button button-gold"
+                    id="featured-watch">▶ WATCH FILM</button>
+
+            <button type="button" class="button button-outline"
+                    id="featured-trailer">▷ WATCH TRAILER</button>
+
+            <button type="button" class="button button-outline"
+                    id="featured-details">ⓘ VIEW DETAILS</button>
+          </div>
+
+          <p class="featured-note" id="featured-note">
+            Featured promotions will appear here.
+          </p>
+        </div>
+
+        <div class="featured-controls">
+          <button type="button" class="round-control" id="featured-prev"
+                  aria-label="Previous promotion">‹</button>
+          <button type="button" class="round-control" id="featured-next"
+                  aria-label="Next promotion">›</button>
+        </div>
+
+        <div class="poster-rail-wrap">
+          <div class="poster-rail" id="poster-rail"
+               aria-label="Choose a featured promotion"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXISTING YOUTUBE CATALOGUE -->
     <section class="section" id="latest">
       <div class="section-heading">
         <div>
           <p class="eyebrow">FROM OUR CHANNEL</p>
           <h2>Latest releases <span class="gold">.</span></h2>
         </div>
-        <a class="text-link" href="https://www.youtube.com/@zirigomedia/videos" target="_blank" rel="noopener">All videos on YouTube ↗</a>
+
+        <a class="text-link"
+           href="https://www.youtube.com/@zirigomedia/videos"
+           target="_blank" rel="noopener">All videos on YouTube ↗</a>
       </div>
 
       <div id="video-grid" class="video-grid"></div>
+
       <div class="channel-callout">
         <div>
           <p class="eyebrow">MORE STORIES. MORE OFTEN.</p>
           <h3>Follow the journey.</h3>
           <p>New work from ZIRIGO Media starts on our YouTube channel.</p>
         </div>
-        <a class="button button-gold" href="https://www.youtube.com/@zirigomedia?sub_confirmation=1" target="_blank" rel="noopener">Subscribe on YouTube ↗</a>
+
+        <a class="button button-gold"
+           href="https://www.youtube.com/@zirigomedia?sub_confirmation=1"
+           target="_blank" rel="noopener">Subscribe on YouTube ↗</a>
       </div>
     </section>
 
     <section class="section about-section" id="about">
       <p class="eyebrow">THE ZIRIGO VISION</p>
       <h2>A home for original stories.</h2>
-      <p class="about-copy">ZIRIGO is an independent film production company based in Nigeria, building memorable stories for audiences at home and around the world. This is our digital cinema: one place to discover our films, shorts and creative journey.</p>
-      <div class="pill-row"><span>Original films</span><span>Short films</span><span>African stories</span><span>Made in Nigeria</span></div>
+
+      <p class="about-copy">
+        ZIRIGO is an independent film production company based in Nigeria,
+        building memorable stories for audiences at home and around the world.
+        This is our digital cinema: one place to discover our films, shorts
+        and creative journey.
+      </p>
+
+      <div class="pill-row">
+        <span>Original films</span>
+        <span>Short films</span>
+        <span>African stories</span>
+        <span>Made in Nigeria</span>
+      </div>
     </section>
   </main>
 
   <footer>
     <a class="footer-brand" href="#home">ZIRIGO</a>
     <p>© <span id="year"></span> ZIRIGO Media. All rights reserved.</p>
-    <a href="https://www.youtube.com/@zirigomedia" target="_blank" rel="noopener">YouTube channel ↗</a>
+    <a href="https://www.youtube.com/@zirigomedia"
+       target="_blank" rel="noopener">YouTube channel ↗</a>
   </footer>
 
   <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script src="app.js"></script>
+
 </body>
 </html>
