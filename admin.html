@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080808">
+  <meta name="robots" content="noindex, nofollow">
+  <title>ZIRIGO Admin</title>
+
+  <link rel="icon" href="assets/zirigo-logo.png">
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    .admin-wrap {
+      max-width: 1050px;
+      margin: 0 auto;
+      padding: 45px 20px 80px;
+    }
+
+    .admin-panel {
+      background: #111110;
+      border: 1px solid #292621;
+      border-radius: 10px;
+      padding: 24px;
+      margin: 24px 0;
+    }
+
+    .admin-panel h2 {
+      margin-top: 0;
+      font-family: Montserrat, sans-serif;
+    }
+
+    .admin-form {
+      display: grid;
+      gap: 16px;
+    }
+
+    .admin-form label {
+      display: grid;
+      gap: 7px;
+      font-size: 13px;
+      color: #d3d0ca;
+    }
+
+    .admin-form input,
+    .admin-form textarea,
+    .admin-form select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 5px;
+      border: 1px solid #39352d;
+      background: #080808;
+      color: #f7f4ee;
+      font: inherit;
+    }
+
+    .admin-form textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .admin-button {
+      border: 0;
+      border-radius: 5px;
+      padding: 12px 17px;
+      background: #f6a91a;
+      color: #191006;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .admin-button.secondary {
+      background: #292621;
+      color: #f7f4ee;
+      border: 1px solid #454035;
+    }
+
+    .admin-button.danger {
+      background: #7d2727;
+      color: white;
+    }
+
+    .admin-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .admin-status {
+      color: #ffd15c;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .admin-promo {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      gap: 18px;
+      padding: 18px 0;
+      border-top: 1px solid #292621;
+    }
+
+    .admin-promo img {
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      object-fit: cover;
+      border-radius: 5px;
+      background: #080808;
+    }
+
+    .admin-promo h3 {
+      margin: 0 0 8px;
+    }
+
+    .admin-promo p {
+      color: #aaa69e;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .admin-badge {
+      display: inline-block;
+      border: 1px solid #665022;
+      border-radius: 20px;
+      padding: 5px 9px;
+      color: #ffd15c;
+      font-size: 11px;
+      margin-bottom: 12px;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media(max-width: 550px) {
+      .admin-panel {
+        padding: 17px;
+      }
+
+      .admin-promo {
+        grid-template-columns: 95px minmax(0, 1fr);
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <img src="assets/zirigo-logo.png" alt="ZIRIGO logo">
+      <span>ZIRIGO</span>
+    </a>
+
+    <nav>
+      <a href="index.html">View website ↗</a>
+    </nav>
+  </header>
+
+  <main class="admin-wrap">
+    <p class="eyebrow">PRIVATE MANAGEMENT AREA</p>
+    <h1 style="font-family:Montserrat,sans-serif">
+      ZIRIGO <span style="color:#f6a91a">Admin.</span>
+    </h1>
+
+    <p style="color:#aaa69e;line-height:1.7">
+      Manage film promotions, posters, trailers and release announcements.
+    </p>
+
+    <p id="admin-status" class="admin-status" role="status" aria-live="polite">
+      Connecting to ZIRIGO…
+    </p>
+
+    <section id="login-panel" class="admin-panel" hidden>
+      <h2>Administrator login</h2>
+
+      <form id="login-form" class="admin-form">
+        <label>
+          Email address
+          <input
+            id="login-email"
+            type="email"
+            autocomplete="username"
+            required
+          >
+        </label>
+
+        <label>
+          Password
+          <input
+            id="login-password"
+            type="password"
+            autocomplete="current-password"
+            required
+          >
+        </label>
+
+        <button class="admin-button" type="submit">
+          Sign in
+        </button>
+      </form>
+    </section>
+
+    <section id="dashboard" hidden>
+      <div class="admin-panel">
+        <div class="admin-actions" style="justify-content:space-between">
+          <h2>Promotions</h2>
+          <button id="logout-button" class="admin-button secondary" type="button">
+            Sign out
+          </button>
+        </div>
+
+        <p style="color:#aaa69e;font-size:13px;line-height:1.7">
+          Add a film poster, its details, and a YouTube trailer. Save it as
+          hidden while preparing the promotion, then activate it when ready.
+        </p>
+      </div>
+
+      <section class="admin-panel">
+        <h2 id="form-heading">Add a promotion</h2>
+
+        <form id="promotion-form" class="admin-form">
+          <label>
+            Film or promotion title *
+            <input id="promo-title" maxlength="150" required>
+          </label>
+
+          <label>
+            Description
+            <textarea id="promo-description" maxlength="3000"></textarea>
+          </label>
+
+          <label>
+            Poster image *
+            <input
+              id="promo-poster"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+            >
+          </label>
+
+          <p style="color:#aaa69e;font-size:12px;margin:0">
+            Use a JPG, PNG or WebP poster. Keep files reasonably small for mobile visitors.
+          </p>
+
+          <label>
+            YouTube trailer URL
+            <input
+              id="promo-trailer"
+              type="url"
+              placeholder="https://www.youtube.com/watch?v=..."
+            >
+          </label>
+
+          <label>
+            Release date
+            <input id="promo-date" type="date">
+          </label>
+
+          <label>
+            Release status
+            <select id="promo-status">
+              <option value="Coming Soon">Coming Soon</option>
+              <option value="Now Available">Now Available</option>
+            </select>
+          </label>
+
+          <label>
+            Display order
+            <input id="promo-order" type="number" value="0" min="0" max="9999">
+          </label>
+
+          <label>
+            Publication
+            <select id="promo-active">
+              <option value="false">Hidden — not visible to visitors</option>
+              <option value="true">Published — visible to visitors</option>
+            </select>
+          </label>
+
+          <div class="admin-actions">
+            <button class="admin-button" type="submit" id="save-button">
+              Save promotion
+            </button>
+
+            <button
+              class="admin-button secondary"
+              type="button"
+              id="cancel-edit-button"
+              hidden
+            >
+              Cancel edit
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="admin-panel">
+        <h2>Your promotions</h2>
+        <div id="promotion-list">
+          <p style="color:#aaa69e">Loading promotions…</p>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    <a class="footer-brand" href="index.html">ZIRIGO</a>
+    <p>ZIRIGO Media — Administration</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="admin.js"></script>
+</body>
+      </html>
