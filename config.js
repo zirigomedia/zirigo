@@ -7,6 +7,6 @@
 */
 window.ZIRIGO_CONFIG = {
   channelUrl: "https://www.youtube.com/@zirigomedia",
-  channelId: "",       // Example format: UCxxxxxxxxxxxxxxxxxxxxxx
-  youtubeApiKey: ""    // Public website API key; restrict it to YouTube Data API v3 and your website domain after publishing
+  channelId: "",       // UCziN2EhNM4hCrP1L-96iWlw
+  youtubeApiKey: ""    // AIzaSyB18H4npcnEDC85Oxbh4SfAU4t8rpl1UIs
 };
