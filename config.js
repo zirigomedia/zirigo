@@ -6,7 +6,7 @@ u/*
   Never paste a Google account password or OAuth secret here.
 */
 window.ZIRIGO_CONFIG = {
-  channelUrl: "https://www.youtube.com/@zirigomedia",
-  channelId: "UCziN2EhNM4hCrP1L-96iWlw
-  youtubeApiKey:"AIzaSyB18H4npcnEDC85Oxbh4SfAU4t8rpl1UIs
+channelUrl: "https://www.youtube.com/@zirigomedia",
+channelId: "UCziN2EhNM4hCrP1L-96iWlw",
+youtubeApiKey: "AIzaSyBc6V6JUOuxL61iOQO2473VpygZn7OlwrE"
 };
