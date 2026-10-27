@@ -470,3 +470,111 @@
     font-size: 12px;
   }
   }
+
+/* =========================================
+   ZIRIGO — PREMIUM BILLBOARD BUTTONS
+   ========================================= */
+
+.featured-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 26px;
+}
+
+/* Shared button styling */
+.featured-actions .button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 48px;
+  padding: 14px 20px;
+  border-radius: 5px;
+  font-family: 'DM Sans', Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    transform 0.22s ease,
+    background 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+/* WATCH FILM — Primary gold button */
+.featured-actions .button-gold {
+  color: #171006;
+  background: linear-gradient(135deg, #ffd76a 0%, #f6a91a 100%);
+  border: 1px solid #ffd76a;
+  box-shadow: 0 5px 20px #f6a91a20;
+}
+
+.featured-actions .button-gold:hover {
+  background: linear-gradient(135deg, #ffe69b 0%, #ffc247 100%);
+  box-shadow: 0 7px 26px #f6a91a40;
+  transform: translateY(-2px);
+}
+
+/* WATCH TRAILER — Secondary outlined button */
+.featured-actions .button-outline {
+  color: #fff8ec;
+  background: #0b0a08c9;
+  border: 1px solid #f6a91a99;
+  box-shadow: inset 0 0 0 1px #ffffff05;
+}
+
+.featured-actions .button-outline:hover {
+  color: #ffd15c;
+  background: #f6a91a12;
+  border-color: #ffd15c;
+  box-shadow: 0 5px 20px #f6a91a15;
+  transform: translateY(-2px);
+}
+
+/* Keyboard accessibility */
+.featured-actions .button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+}
+
+/* Disabled buttons */
+.featured-actions .button:disabled {
+  opacity: 0.48;
+  filter: grayscale(0.3);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Mobile layout */
+@media (max-width: 420px) {
+  .featured-actions {
+    gap: 9px;
+  }
+
+  .featured-actions .button {
+    min-height: 44px;
+    padding: 12px 11px;
+    font-size: 10px;
+    letter-spacing: 0.2px;
+    gap: 7px;
+  }
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .featured-actions .button {
+    transition: none;
+  }
+
+  .featured-actions .button:hover {
+    transform: none;
+  }
+}
