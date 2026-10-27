@@ -578,3 +578,308 @@
     transform: none;
   }
 }
+/* =========================================
+ZIRIGO — PREMIUM SETTINGS PANEL
+========================================= */
+
+.settings-overlay {
+position: fixed;
+inset: 0;
+z-index: 10000;
+display: flex;
+justify-content: flex-end;
+align-items: stretch;
+padding: 0;
+background: rgba(0, 0, 0, 0.76);
+backdrop-filter: blur(7px);
+-webkit-backdrop-filter: blur(7px);
+opacity: 0;
+visibility: hidden;
+pointer-events: none;
+transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.settings-overlay.is-open {
+opacity: 1;
+visibility: visible;
+pointer-events: auto;
+}
+
+.settings-panel {
+position: relative;
+width: min(100%, 430px);
+height: 100%;
+height: 100dvh;
+overflow-y: auto;
+overscroll-behavior: contain;
+padding: 28px 23px 24px;
+color: #f7f4ee;
+background:
+radial-gradient(ellipse at top right, #f6a91a12, transparent 38%),
+#10100f;
+border-left: 1px solid #f6a91a35;
+box-shadow: -15px 0 55px #0009;
+transform: translateX(35px);
+transition: transform 0.3s ease;
+-webkit-overflow-scrolling: touch;
+}
+
+.settings-overlay.is-open .settings-panel {
+transform: translateX(0);
+}
+
+.settings-header {
+display: flex;
+align-items: flex-start;
+justify-content: space-between;
+gap: 16px;
+margin-bottom: 27px;
+}
+
+.settings-eyebrow {
+display: block;
+margin-bottom: 8px;
+color: #f6a91a;
+font-size: 10px;
+font-weight: 800;
+letter-spacing: 2px;
+}
+
+.settings-header h2 {
+margin: 0;
+color: #fffaf0;
+font-family: 'Montserrat', Arial, sans-serif;
+font-size: 29px;
+font-weight: 800;
+letter-spacing: -0.8px;
+}
+
+.settings-close {
+display: grid;
+place-items: center;
+flex: 0 0 42px;
+width: 42px;
+height: 42px;
+color: #f7f4ee;
+background: #ffffff08;
+border: 1px solid #ffffff20;
+border-radius: 50%;
+font-size: 27px;
+line-height: 1;
+cursor: pointer;
+transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.settings-close:hover {
+background: #f6a91a18;
+border-color: #f6a91a90;
+}
+
+.settings-brand {
+display: flex;
+align-items: center;
+gap: 15px;
+margin-bottom: 31px;
+padding: 18px;
+background: linear-gradient(120deg, #f6a91a12, #ffffff03);
+border: 1px solid #f6a91a35;
+border-radius: 12px;
+}
+
+.settings-brand img {
+display: block;
+width: 53px;
+height: 53px;
+object-fit: contain;
+}
+
+.settings-brand h3 {
+margin: 0 0 5px;
+color: #ffd15c;
+font-family: 'Montserrat', Arial, sans-serif;
+font-size: 18px;
+font-weight: 800;
+letter-spacing: 1.5px;
+}
+
+.settings-brand p {
+margin: 0;
+color: #aaa69e;
+font-size: 12px;
+line-height: 1.5;
+}
+
+.settings-section {
+margin: 0 0 27px;
+}
+
+.settings-section > h4 {
+margin: 0 0 11px 3px;
+color: #928d83;
+font-size: 10px;
+font-weight: 800;
+letter-spacing: 1.8px;
+}
+
+.settings-item {
+display: flex;
+align-items: center;
+gap: 13px;
+width: 100%;
+min-height: 70px;
+padding: 14px 12px;
+color: inherit;
+text-align: left;
+text-decoration: none;
+background: #ffffff04;
+border: 1px solid #ffffff0c;
+border-radius: 9px;
+box-sizing: border-box;
+transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.settings-section .settings-item + .settings-item {
+margin-top: 8px;
+}
+
+.settings-item:hover,
+.settings-item:focus-visible {
+background: #f6a91a0d;
+border-color: #f6a91a55;
+}
+
+.settings-item-icon {
+display: grid;
+place-items: center;
+flex: 0 0 38px;
+width: 38px;
+height: 38px;
+color: #ffd15c;
+background: #f6a91a12;
+border: 1px solid #f6a91a24;
+border-radius: 9px;
+font-size: 19px;
+}
+
+.settings-item > span:nth-child(2) {
+display: flex;
+flex: 1;
+flex-direction: column;
+gap: 5px;
+min-width: 0;
+}
+
+.settings-item strong {
+color: #f7f4ee;
+font-size: 13px;
+font-weight: 700;
+}
+
+.settings-item small {
+color: #aaa69e;
+font-size: 11px;
+line-height: 1.5;
+overflow-wrap: anywhere;
+}
+
+.settings-arrow {
+color: #d4a84f;
+font-size: 23px;
+}
+
+.settings-action {
+font: inherit;
+cursor: pointer;
+}
+
+.settings-info {
+cursor: default;
+}
+
+.settings-footer {
+margin: 30px 0 5px;
+padding-top: 20px;
+color: #77736b;
+text-align: center;
+font-size: 11px;
+line-height: 1.6;
+border-top: 1px solid #ffffff12;
+}
+
+.privacy-panel {
+margin-left: auto;
+}
+
+.privacy-panel > p {
+margin: 0 0 18px;
+color: #c7c1b7;
+font-size: 13px;
+line-height: 1.85;
+}
+
+.privacy-panel > p a {
+color: #ffd15c;
+overflow-wrap: anywhere;
+}
+
+.privacy-panel .privacy-notice {
+margin-top: 25px;
+padding: 14px;
+color: #b5a27e;
+background: #f6a91a0b;
+border: 1px solid #f6a91a25;
+border-radius: 8px;
+font-size: 11px;
+}
+
+.settings-button {
+display: inline-grid;
+place-items: center;
+flex: 0 0 42px;
+width: 42px;
+height: 42px;
+padding: 0;
+color: #ffd15c;
+background: #f6a91a0c;
+border: 1px solid #f6a91a55;
+border-radius: 50%;
+font-size: 21px;
+cursor: pointer;
+transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.settings-button:hover {
+background: #f6a91a20;
+transform: rotate(25deg);
+}
+
+.settings-button:focus-visible,
+.settings-close:focus-visible {
+outline: 2px solid #ffd15c;
+outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+.settings-panel {
+width: 100%;
+padding: 24px 18px 22px;
+border-left: 0;
+}
+
+.settings-header h2 {
+font-size: 27px;
+}
+}
+
+@media (prefers-reduced-motion: reduce) {
+.settings-overlay,
+.settings-panel,
+.settings-close,
+.settings-button {
+transition: none;
+}
+
+.settings-button:hover {
+transform: none;
+}
+  }
