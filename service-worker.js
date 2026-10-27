@@ -1,24 +1,69 @@
+const CACHE_NAME = "zirigo-cache-v1";
+
+const APP_FILES = [
+"./",
+"./index.html",
+"./styles.css",
+"./app.js",
+"./config.js",
+"./manifest.webmanifest",
+"./assets/zirigo-logo.png"
+];
+
 self.addEventListener("install", event => {
-  self.skipWaiting();
+event.waitUntil((async () => {
+const cache = await caches.open(CACHE_NAME);
+
+await cache.addAll(APP_FILES);
+await self.skipWaiting();
+
+})());
 });
 
 self.addEventListener("activate", event => {
-  event.waitUntil((async () => {
-    const keys = await caches.keys();
+event.waitUntil((async () => {
+const keys = await caches.keys();
 
-    await Promise.all(
-      keys.map(key => caches.delete(key))
-    );
+await Promise.all(
+  keys
+    .filter(key => key.startsWith("zirigo-cache-") && key !== CACHE_NAME)
+    .map(key => caches.delete(key))
+);
 
-    await self.registration.unregister();
-    await self.clients.claim();
+await self.clients.claim();
 
-    const clients = await self.clients.matchAll({
-      type: "window"
-    });
+})());
+});
 
-    for (const client of clients) {
-      await client.navigate(client.url);
-    }
-  })());
+self.addEventListener("fetch", event => {
+if (event.request.method !== "GET") return;
+
+const url = new URL(event.request.url);
+
+if (url.origin !== self.location.origin) return;
+
+event.respondWith((async () => {
+try {
+const response = await fetch(event.request);
+
+  if (response.ok) {
+    const cache = await caches.open(CACHE_NAME);
+    await cache.put(event.request, response.clone());
+  }
+
+  return response;
+} catch (error) {
+  const cached = await caches.match(event.request);
+
+  if (cached) return cached;
+
+  if (event.request.mode === "navigate") {
+    return (await caches.match("./index.html")) ||
+      Response.error();
+  }
+
+  return Response.error();
+}
+
+})());
 });
