@@ -541,4 +541,95 @@ screen.orientation.unlock();
   restartRotation();
   loadPromotions();
   loadVideos();
+  /* =========================================
+ZIRIGO — SETTINGS PANEL CONTROLS
+========================================= */
+
+const settingsOpenButton = $("zirigo-settings-open");
+const settingsOverlay = $("zirigo-settings-overlay");
+const settingsCloseButton = $("zirigo-settings-close");
+
+const privacyOverlay = $("zirigo-privacy-overlay");
+const privacyOpenButton = $("zirigo-privacy-open");
+const privacyCloseButton = $("zirigo-privacy-close");
+
+let settingsPreviousFocus = null;
+
+function openSettingsPanel() {
+if (!settingsOverlay) return;
+
+settingsPreviousFocus = document.activeElement;
+
+settingsOverlay.classList.add("is-open");
+settingsOverlay.setAttribute("aria-hidden", "false");
+document.body.style.overflow = "hidden";
+
+if (settingsCloseButton) settingsCloseButton.focus();
+
+}
+
+function closeSettingsPanel() {
+if (!settingsOverlay) return;
+
+settingsOverlay.classList.remove("is-open");
+settingsOverlay.setAttribute("aria-hidden", "true");
+
+document.body.style.overflow = privacyOverlay?.classList.contains("is-open")
+  ? "hidden"
+  : "";
+
+if (settingsPreviousFocus && typeof settingsPreviousFocus.focus === "function") {
+  settingsPreviousFocus.focus();
+}
+
+}
+
+function openPrivacyPanel() {
+if (!privacyOverlay) return;
+
+privacyOverlay.classList.add("is-open");
+privacyOverlay.setAttribute("aria-hidden", "false");
+
+}
+
+function closePrivacyPanel() {
+if (!privacyOverlay) return;
+
+privacyOverlay.classList.remove("is-open");
+privacyOverlay.setAttribute("aria-hidden", "true");
+
+document.body.style.overflow = settingsOverlay?.classList.contains("is-open")
+  ? "hidden"
+  : "";
+
+}
+
+settingsOpenButton?.addEventListener("click", openSettingsPanel);
+settingsCloseButton?.addEventListener("click", closeSettingsPanel);
+
+privacyOpenButton?.addEventListener("click", openPrivacyPanel);
+privacyCloseButton?.addEventListener("click", closePrivacyPanel);
+
+settingsOverlay?.addEventListener("click", (event) => {
+if (event.target === settingsOverlay) {
+closeSettingsPanel();
+}
+});
+
+privacyOverlay?.addEventListener("click", (event) => {
+if (event.target === privacyOverlay) {
+closePrivacyPanel();
+}
+});
+
+document.addEventListener("keydown", (event) => {
+if (event.key !== "Escape") return;
+
+if (privacyOverlay?.classList.contains("is-open")) {
+  closePrivacyPanel();
+} else if (settingsOverlay?.classList.contains("is-open")) {
+  closeSettingsPanel();
+}
+
+});
 })();
