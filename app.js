@@ -459,80 +459,160 @@ screen.orientation.unlock();
   }
 
   async function loadVideos() {
-    if (!grid) return;
+if (!grid) return;
 
-    showMessage("Loading ZIRIGO films…");
+const showLoading = () => {
+  grid.innerHTML = Array.from({ length: 6 }, () => `
+    <article class="video-card video-skeleton" aria-hidden="true">
+      <div class="skeleton-thumbnail"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line skeleton-line-short"></div>
+    </article>
+  `).join("");
+};
 
-    if (!cfg.channelId || !cfg.youtubeApiKey) {
-      showMessage("Configuration error: channel ID or API key is missing.");
-      return;
-    }
+const showState = (title, description, retry = false) => {
+  grid.innerHTML = `
+    <div class="video-state">
+      <div class="video-state-icon" aria-hidden="true">
+        ${retry ? "!" : "✦"}
+      </div>
+      <h3>${escapeHTML(title)}</h3>
+      <p>${escapeHTML(description)}</p>
+      ${retry ? `
+        <button class="button button-gold" id="zirigo-videos-retry" type="button">
+          Try Again ↻
+        </button>
+      ` : ""}
+    </div>
+  `;
 
-    try {
-      const url = new URL("https://www.googleapis.com/youtube/v3/search");
+  const retryButton = $("zirigo-videos-retry");
+  retryButton?.addEventListener("click", loadVideos);
+};
 
-      url.search = new URLSearchParams({
-        part: "snippet",
-        channelId: cfg.channelId,
-        maxResults: "9",
-        order: "date",
-        type: "video",
-        key: cfg.youtubeApiKey
-      });
+showLoading();
 
-      const response = await fetch(url);
-      const data = await response.json();
+if (!cfg.channelId || !cfg.youtubeApiKey) {
+  showState(
+    "Almost ready",
+    "Our film collection is temporarily unavailable. Please try again later."
+  );
+  console.error("ZIRIGO: YouTube channel ID or API key is missing.");
+  return;
+}
 
-      if (!response.ok || data.error) {
-        showMessage(
-          "YouTube API error: " + (data.error?.message || response.status)
-        );
-        return;
-      }
+const controller = new AbortController();
+const timeout = setTimeout(() => controller.abort(), 15000);
 
-      if (!data.items || !data.items.length) {
-        showMessage("No public videos found for this channel.");
-        return;
-      }
+try {
+  const url = new URL("https://www.googleapis.com/youtube/v3/search");
 
-      grid.innerHTML = data.items.map(video => {
-        const id = video.id.videoId;
-        const title = escapeHTML(video.snippet.title);
-        const thumbnail =
-          video.snippet.thumbnails.high?.url ||
-          video.snippet.thumbnails.medium?.url ||
-          video.snippet.thumbnails.default?.url;
+  url.search = new URLSearchParams({
+    part: "snippet",
+    channelId: cfg.channelId,
+    maxResults: "9",
+    order: "date",
+    type: "video",
+    key: cfg.youtubeApiKey
+  });
 
-        return `
-          <article class="video-card">
-            <button
-              class="video-thumb zirigo-watch-button"
-              type="button"
-              data-video-id="${escapeHTML(id)}"
-              data-video-title="${title}"
-              aria-label="Play ${title}">
-              <img src="${escapeHTML(thumbnail)}" alt="${title}" loading="lazy">
-              <span class="play" aria-hidden="true">▶</span>
-            </button>
-            <div class="video-info">
-              <h3>${title}</h3>
-              <p>▶ Watch on ZIRIGO</p>
-            </div>
-          </article>
-        `;
-      }).join("");
+  const response = await fetch(url, {
+    signal: controller.signal
+  });
 
-      grid.querySelectorAll(".zirigo-watch-button").forEach(button => {
-        button.addEventListener("click", () => {
-          openPlayer(button.dataset.videoId, button.dataset.videoTitle);
-        });
-      });
-    } catch (error) {
-      console.error("ZIRIGO video error:", error);
-      showMessage("Could not connect to YouTube. Check your connection and API settings.");
-    }
+  const data = await response.json();
+
+  if (!response.ok || data.error) {
+    console.error("ZIRIGO YouTube API error:", data.error || response.status);
+
+    showState(
+      "We couldn't load the films",
+      "Please check your connection and try again.",
+      true
+    );
+    return;
   }
 
+  if (!data.items || !data.items.length) {
+    showState(
+      "More stories are coming",
+      "There are no public videos to display right now. Please check back soon."
+    );
+    return;
+  }
+
+  grid.innerHTML = data.items.map(video => {
+    const id = video.id?.videoId;
+    const title = escapeHTML(video.snippet?.title || "Untitled film");
+    const thumbnails = video.snippet?.thumbnails || {};
+    const thumbnail =
+      thumbnails.high?.url ||
+      thumbnails.medium?.url ||
+      thumbnails.default?.url ||
+      "";
+
+    if (!id) return "";
+
+    return `
+      <article class="video-card">
+        <button
+          class="video-thumb zirigo-watch-button"
+          type="button"
+          data-video-id="${escapeHTML(id)}"
+          data-video-title="${title}"
+          aria-label="Play ${title}">
+          ${thumbnail ? `
+            <img
+              src="${escapeHTML(thumbnail)}"
+              alt="${title}"
+              loading="lazy">
+          ` : ""}
+          <span class="play" aria-hidden="true">▶</span>
+        </button>
+        <div class="video-info">
+          <h3>${title}</h3>
+          <p>▶ Watch on ZIRIGO</p>
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  if (!grid.querySelector(".video-card")) {
+    showState(
+      "More stories are coming",
+      "There are no playable public videos to display right now."
+    );
+    return;
+  }
+
+  grid.querySelectorAll(".zirigo-watch-button").forEach(button => {
+    button.addEventListener("click", () => {
+      openPlayer(button.dataset.videoId, button.dataset.videoTitle);
+    });
+  });
+
+} catch (error) {
+  console.error("ZIRIGO video loading error:", error);
+
+  if (error.name === "AbortError") {
+    showState(
+      "Taking longer than expected",
+      "The connection is taking too long. Please try again.",
+      true
+    );
+  } else {
+    showState(
+      "You're not connected",
+      "We couldn't reach YouTube. Check your internet connection and try again.",
+      true
+    );
+  }
+} finally {
+  clearTimeout(timeout);
+}
+
+}
   const year = $("year");
   if (year) year.textContent = new Date().getFullYear();
 
