@@ -883,3 +883,111 @@ transition: none;
 transform: none;
 }
   }
+/* =========================================
+ZIRIGO — VIDEO LOADING & ERROR STATES
+========================================= */
+
+.video-skeleton {
+overflow: hidden;
+}
+
+.skeleton-thumbnail {
+width: 100%;
+aspect-ratio: 16 / 9;
+border-radius: 9px;
+background: linear-gradient(
+100deg,
+#171614 25%,
+#29251d 45%,
+#171614 65%
+);
+background-size: 200% 100%;
+animation: zirigo-shimmer 1.5s infinite linear;
+}
+
+.skeleton-line {
+height: 12px;
+width: 85%;
+margin: 14px 0 0;
+border-radius: 5px;
+background: #24221e;
+animation: zirigo-pulse 1.5s infinite ease-in-out;
+}
+
+.skeleton-line-short {
+width: 55%;
+height: 9px;
+margin-top: 9px;
+opacity: 0.7;
+}
+
+@keyframes zirigo-shimmer {
+from { background-position: 100% 0; }
+to { background-position: -100% 0; }
+}
+
+@keyframes zirigo-pulse {
+0%, 100% { opacity: 0.5; }
+50% { opacity: 1; }
+}
+
+.video-state {
+grid-column: 1 / -1;
+width: 100%;
+box-sizing: border-box;
+padding: 48px 20px;
+text-align: center;
+color: #f7f4ee;
+background: linear-gradient(145deg, #141310, #0b0b0a);
+border: 1px solid #f6a91a30;
+border-radius: 12px;
+}
+
+.video-state-icon {
+display: grid;
+place-items: center;
+width: 48px;
+height: 48px;
+margin: 0 auto 18px;
+color: #ffd15c;
+font-size: 25px;
+font-weight: 800;
+background: #f6a91a12;
+border: 1px solid #f6a91a40;
+border-radius: 50%;
+}
+
+.video-state h3 {
+margin: 0 0 10px;
+color: #fff8ec;
+font-family: 'Montserrat', Arial, sans-serif;
+font-size: 19px;
+font-weight: 700;
+}
+
+.video-state p {
+max-width: 360px;
+margin: 0 auto 20px;
+color: #aaa69e;
+font-size: 13px;
+line-height: 1.7;
+}
+
+.video-state .button {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+min-height: 42px;
+padding: 12px 20px;
+border-radius: 5px;
+font-size: 12px;
+font-weight: 700;
+cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+.skeleton-thumbnail,
+.skeleton-line {
+animation: none;
+}
+}
