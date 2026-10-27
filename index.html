@@ -139,5 +139,20 @@
   <script src="supabase-config.js"></script>
   <script src="app.js"></script>
 
+  <script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("./service-worker.js")
+        .then(registration => {
+          console.log("ZIRIGO service worker registered:", registration.scope);
+        })
+        .catch(error => {
+          console.error("ZIRIGO service worker registration failed:", error);
+        });
+    });
+  }
+  </script>
+  
 </body>
 </html>
