@@ -1,17 +1,21 @@
 {
-  "name": "ZIRIGO",
-  "short_name": "ZIRIGO",
-  "description": "Original films and stories from ZIRIGO Media.",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#080808",
-  "theme_color": "#080808",
-  "icons": [
-    {
-      "src": "assets/zirigo-logo.png",
-      "sizes": "any",
-      "type": "image/png",
-      "purpose": "any"
-    }
-  ]
+"id": "./",
+"name": "ZIRIGO",
+"short_name": "ZIRIGO",
+"description": "Discover and watch original African films and stories from ZIRIGO.",
+"start_url": "./",
+"scope": "./",
+"display": "standalone",
+"orientation": "any",
+"background_color": "#080808",
+"theme_color": "#080808",
+"categories": ["entertainment", "video"],
+"icons": [
+{
+"src": "assets/zirigo-logo.png",
+"sizes": "any",
+"type": "image/png",
+"purpose": "any"
+}
+]
 }
