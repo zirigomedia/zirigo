@@ -207,33 +207,38 @@
     }
   });
 
-  fullButton.addEventListener("click", async () => {
-try {
-// Enter fullscreen mode
-if (!document.fullscreenElement) {
-if (player.requestFullscreen) {
-await player.requestFullscreen();
-} else if (player.webkitRequestFullscreen) {
-player.webkitRequestFullscreen();
-} else {
-alert("Fullscreen isn't supported here. Please use YouTube's fullscreen button.");
-return;
-}
-}
-
-// Request landscape orientation where supported
-if (screen.orientation && screen.orientation.lock) {
+  
+fullButton.addEventListener("click", async () => {
   try {
-    await screen.orientation.lock("landscape");
-  } catch (_) {
-    // Some mobile browsers don't allow websites to lock orientation.
-    // Users can enable Auto-rotate on their phones.
-  }
-}
+    if (document.fullscreenElement) {
+      if (document.exitFullscreen) {
+        await document.exitFullscreen();
+      }
+      if (screen.orientation && screen.orientation.unlock) {
+        try {
+          screen.orientation.unlock();
+        } catch (_) {}
+      }
+      return;
+    }
 
-} catch (_) {
-alert("Please use YouTube's fullscreen button and enable Auto-rotate on your phone.");
-}
+    if (player.requestFullscreen) {
+      await player.requestFullscreen();
+    } else if (player.webkitRequestFullscreen) {
+      player.webkitRequestFullscreen();
+    } else {
+      alert("Fullscreen isn't supported here. Please use YouTube's fullscreen button.");
+      return;
+    }
+
+    if (screen.orientation && screen.orientation.lock) {
+      try {
+        await screen.orientation.lock("landscape");
+      } catch (_) {}
+    }
+  } catch (_) {
+    alert("Please use YouTube's fullscreen button and enable Auto-rotate on your phone.");
+  }
 });
 
 // Restore normal orientation when leaving fullscreen
