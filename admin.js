@@ -202,7 +202,7 @@
 
     const { error: uploadError } = await supabase
       .storage
-      .from("Promotion-posters")
+      .from("promotion-posters")
       .upload(path, file, {
         contentType: file.type,
         upsert: false
@@ -214,7 +214,7 @@
 
     const { data } = supabase
       .storage
-      .from("Promotion-posters")
+      .from("promotion-posters")
       .getPublicUrl(path);
 
     return data.publicUrl;
