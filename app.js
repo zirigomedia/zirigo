@@ -208,17 +208,11 @@
   });
 
   
+
 fullButton.addEventListener("click", async () => {
   try {
     if (document.fullscreenElement) {
-      if (document.exitFullscreen) {
-        await document.exitFullscreen();
-      }
-      if (screen.orientation && screen.orientation.unlock) {
-        try {
-          screen.orientation.unlock();
-        } catch (_) {}
-      }
+      await document.exitFullscreen();
       return;
     }
 
@@ -241,15 +235,20 @@ fullButton.addEventListener("click", async () => {
   }
 });
 
+
 // Restore normal orientation when leaving fullscreen
-document.addEventListener("fullscreenchange", async () => {
-if (!document.fullscreenElement && screen.orientation && screen.orientation.unlock) {
-try {
-screen.orientation.unlock();
-} catch (_) {
-// Orientation unlocking isn't supported in every browser.
-}
-}
+document.addEventListener("fullscreenchange", () => {
+  const isFullscreen = !!document.fullscreenElement;
+
+  fullButton.textContent = isFullscreen
+    ? "↙ Normal"
+    : "⛶ Fullscreen";
+
+  if (!isFullscreen && screen.orientation?.unlock) {
+    try {
+      screen.orientation.unlock();
+    } catch (_) {}
+  }
 });
 
   // Billboard elements.
