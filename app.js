@@ -265,8 +265,7 @@ document.addEventListener("keydown", event => {
   if (event.key === "Escape" && player.style.display !== "none") {
     closePlayer();
   }
-});
-  
+});  
 fullButton.addEventListener("click", async () => {
   try {
     if (document.fullscreenElement) {
