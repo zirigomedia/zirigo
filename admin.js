@@ -81,6 +81,7 @@
     promotionForm.reset();
     editingId = null;
     editingPosterUrl = null;
+    editingTrailerUrl = null;
     posterToDelete = null;
 
     $("promo-order").value = "0";
