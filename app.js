@@ -430,8 +430,8 @@ document.addEventListener("fullscreenchange", () => {
   trailerButton.addEventListener("click", () => {
   const promo = currentPromo();
 
-  if (youtubeId(promo.trailer_url)) {
-    openPlayer(promo.trailer_url, `${promo.title} — Trailer`);
+  if (promo.trailer_url) {
+    openUploadedTrailer(promo.trailer_url, promo.title);
   }
 });
 
