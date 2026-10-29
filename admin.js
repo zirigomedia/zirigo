@@ -220,6 +220,58 @@
     return data.publicUrl;
   }
 
+  
+  async function uploadTrailer(file) {
+    if (!file) return null;
+
+    const allowedTypes = [
+      "video/mp4",
+      "video/webm",
+      "video/quicktime"
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      throw new Error(
+        "Please choose an MP4, WebM or MOV video."
+      );
+    }
+
+    if (file.size > 50 * 1024 * 1024) {
+      throw new Error(
+        "The trailer must be 50 MB or smaller. Please compress it and try again."
+      );
+    }
+
+    const extension = ({
+      "video/mp4": "mp4",
+      "video/webm": "webm",
+      "video/quicktime": "mov"
+    })[file.type];
+
+    const path =
+      currentUser.id + "/" +
+      crypto.randomUUID() + "." + extension;
+
+    const { error: uploadError } = await supabase
+      .storage
+      .from("promotion-trailers")
+      .upload(path, file, {
+        contentType: file.type,
+        upsert: false
+      });
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+    const { data } = supabase
+      .storage
+      .from("promotion-trailers")
+      .getPublicUrl(path);
+
+    return data.publicUrl;
+  }
+
   async function savePromotion(event) {
     event.preventDefault();
 
