@@ -400,14 +400,13 @@
       if (action === "edit") {
         editingId = promo.id;
         editingPosterUrl = promo.poster_url;
-editingTrailerUrl = promo.trailer_url || null;
-posterToDelete = null;
+        editingTrailerUrl = promo.trailer_url || null;
+        posterToDelete = null;
 
         $("promo-title").value = promo.title || "";
         $("promo-tagline").value = promo.tagline || "";
-        $("promo-genre").value = promo.genre || ""; 
+        $("promo-genre").value = promo.genre || "";
         $("promo-description").value = promo.description || "";
-        editingTrailerUrl = promo.trailer_url || null;
         $("promo-trailer").value = "";
         $("promo-date").value = promo.release_date || "";
         $("promo-status").value = promo.status || "Coming Soon";
