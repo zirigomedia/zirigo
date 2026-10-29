@@ -218,7 +218,7 @@
   trailerVideo.style.display = "block";
   trailerVideo.load();
 
-  playerTitle.textContent = title ? `${title} — Trailer` : "ZIRIGO Trailer";
+  if (playerTitle) playerTitle.textContent = title ? `${title} — Trailer` : "ZIRIGO Trailer";
   player.style.display = "flex";
   document.body.style.overflow = "hidden";
 
