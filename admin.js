@@ -405,7 +405,8 @@
         $("promo-tagline").value = promo.tagline || "";
         $("promo-genre").value = promo.genre || ""; 
         $("promo-description").value = promo.description || "";
-        $("promo-trailer").value = promo.trailer_url || "";
+        editingTrailerUrl = promo.trailer_url || null;
+        $("promo-trailer").value = "";
         $("promo-date").value = promo.release_date || "";
         $("promo-status").value = promo.status || "Coming Soon";
         $("promo-order").value = promo.sort_order ?? 0;
