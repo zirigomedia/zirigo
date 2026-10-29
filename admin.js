@@ -16,6 +16,7 @@
   let currentUser = null;
   let editingId = null;
   let editingPosterUrl = null;
+  let editingTrailerUrl = null;
   let posterToDelete = null;
   let busy = false;
 
