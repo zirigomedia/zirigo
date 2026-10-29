@@ -45,76 +45,8 @@
     return "";
   }
 
-  /*
-   * SAMPLE PROMOTIONS
-   * These are fictional examples, not actual ZIRIGO releases.
-   * They appear only when no active Supabase promotions are available.
-   */
-  const samplePromotions = [
-    {
-      id: "sample-1",
-      title: "The Last Village",
-      description: "When a peaceful village is threatened, one young person must choose between personal dreams and the people they love.",
-      poster_url: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=1400&q=85",
-      trailer_url: "",
-      status: "Coming Soon",
-      sample: true
-    },
-    {
-      id: "sample-2",
-      title: "Silent Scars",
-      description: "A family tries to rebuild trust after a secret from the past changes everything.",
-      poster_url: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=85",
-      trailer_url: "",
-      status: "Coming Soon",
-      sample: true
-    },
-    {
-      id: "sample-3",
-      title: "The Return",
-      description: "A homecoming forces a young man to face the truth he left behind.",
-      poster_url: "https://images.unsplash.com/photo-1500534623283-312aadecee9b?auto=format&fit=crop&w=1400&q=85",
-      trailer_url: "",
-      status: "Coming Soon",
-      sample: true
-    },
-    {
-      id: "sample-4",
-      title: "Beyond the River",
-      description: "On the other side of the river lies a choice that could change an entire community.",
-      poster_url: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1400&q=85",
-      trailer_url: "",
-      status: "Coming Soon",
-      sample: true
-    },
-    {
-      id: "sample-5",
-      title: "Broken Dreams",
-      description: "Two people discover that hope can survive even the hardest seasons.",
-      poster_url: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1400&q=85",
-      trailer_url: "",
-      status: "Coming Soon",
-      sample: true
-    },
-    {
-      id: "sample-6",
-      title: "The Journey",
-      description: "A journey away from home becomes a journey toward understanding.",
-      poster_url: "https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1400&q=85",
-      trailer_url: "",
-      status: "Coming Soon",
-      sample: true
-    },
-    {
-      id: "sample-7",
-      title: "Family Bonds",
-      description: "A family learns what it means to stand together when everything is at stake.",
-      poster_url: "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1400&q=85",
-      trailer_url: "",
-      status: "Coming Soon",
-      sample: true
-    }
-  ];
+  // Billboard promotions come only from the admin-managed Supabase table.
+  const samplePromotions = [];
 
   // Shared YouTube player used by the catalogue and billboard.
   const player = document.createElement("div");
@@ -318,7 +250,7 @@ document.addEventListener("fullscreenchange", () => {
   const trailerButton = $("featured-trailer");
   const detailsButton = $("featured-details");
 
-  let promotions = samplePromotions;
+  let promotions = [];
   let currentIndex = 0;
   let rotationTimer = null;
 
@@ -352,6 +284,142 @@ document.addEventListener("fullscreenchange", () => {
     }
   });
 
+  function renderRail() {
+    if (!rail) return;
+    rail.innerHTML = "";
+
+    if (!promotions.length) {
+      rail.hidden = true;
+      return;
+    }
+
+    rail.hidden = false;
+    rail.innerHTML = promotions.map((promo, index) => `
+      <button class="poster-tile ${index === currentIndex ? "is-active" : ""}"
+              type="button" data-promotion-index="${index}"
+              aria-label="Feature ${escapeHTML(promo.title || "film")}">
+        <img src="${escapeHTML(promo.poster_url || "")}"
+             alt="${escapeHTML(promo.title || "Film poster")}" loading="lazy">
+        <span>${escapeHTML(promo.title || "Untitled")}</span>
+      </button>
+    `).join("");
+
+    rail.querySelectorAll("[data-promotion-index]").forEach(button => {
+      button.addEventListener("click", () => {
+        currentIndex = Number(button.dataset.promotionIndex) || 0;
+        renderRail();
+        renderFeatured();
+        restartRotation();
+      });
+    });
+  }
+
+  function renderFeatured() {
+    const previous = $("featured-prev");
+    const next = $("featured-next");
+
+    if (!promotions.length) {
+      if (backdrop) {
+        backdrop.style.backgroundImage = "none";
+        backdrop.style.backgroundColor = "#080808";
+      }
+      if (titleEl) titleEl.textContent = "Discover your next story";
+      if (descriptionEl) descriptionEl.textContent =
+        "Original stories from ZIRIGO. Our featured films will appear here.";
+      if (statusEl) statusEl.textContent = "FEATURED ON ZIRIGO";
+      if (noteEl) noteEl.textContent = "New promotions will appear here when you publish them in ZIRIGO Admin.";
+      if (trailerButton) trailerButton.hidden = true;
+      if (detailsButton) detailsButton.hidden = true;
+      if (previous) previous.hidden = true;
+      if (next) next.hidden = true;
+      if (rail) rail.innerHTML = "";
+      return;
+    }
+
+    currentIndex = ((currentIndex % promotions.length) + promotions.length) % promotions.length;
+    const promo = promotions[currentIndex];
+    const poster = promo.poster_url || "";
+
+    if (backdrop) {
+      backdrop.style.backgroundColor = "#080808";
+      backdrop.style.backgroundImage = poster ? `url("${poster.replace(/["\\\\]/g, "")}")` : "none";
+    }
+    if (titleEl) titleEl.textContent = promo.title || "Untitled film";
+    if (descriptionEl) descriptionEl.textContent = promo.tagline || promo.description || "";
+    if (statusEl) statusEl.textContent = String(promo.status || "Coming Soon").toUpperCase();
+    if (noteEl) noteEl.textContent = promo.release_date
+      ? "Release date: " + promo.release_date
+      : (promo.genre || "A featured ZIRIGO story");
+
+    if (trailerButton) {
+      trailerButton.hidden = !promo.trailer_url;
+      trailerButton.onclick = () => openUploadedTrailer(promo.trailer_url, promo.title);
+    }
+    if (detailsButton) {
+      detailsButton.hidden = false;
+      detailsButton.onclick = () => {
+        const detailPoster = $("featured-detail-poster");
+        const detailTitle = $("featured-detail-title");
+        const detailTagline = $("featured-detail-tagline");
+        const detailDescription = $("featured-detail-description");
+        const detailMeta = $("featured-detail-meta");
+        const detailTrailer = $("featured-detail-trailer");
+
+        if (detailPoster) {
+          detailPoster.src = poster;
+          detailPoster.alt = promo.title || "Film poster";
+          detailPoster.hidden = !poster;
+        }
+        if (detailTitle) detailTitle.textContent = promo.title || "Untitled film";
+        if (detailTagline) detailTagline.textContent = promo.tagline || "";
+        if (detailDescription) detailDescription.textContent = promo.description || "More details coming soon.";
+        if (detailMeta) detailMeta.textContent = [promo.genre, promo.status, promo.release_date].filter(Boolean).join(" · ");
+        if (detailTrailer) {
+          detailTrailer.style.display = promo.trailer_url ? "" : "none";
+          detailTrailer.onclick = () => openUploadedTrailer(promo.trailer_url, promo.title);
+        }
+        detailsModal.classList.add("is-open");
+      };
+    }
+
+    if (previous) previous.hidden = promotions.length < 2;
+    if (next) next.hidden = promotions.length < 2;
+    if (rail) {
+      rail.querySelectorAll(".poster-tile").forEach((tile, index) => {
+        tile.classList.toggle("is-active", index === currentIndex);
+      });
+    }
+  }
+
+  function restartRotation() {
+    if (rotationTimer) {
+      clearInterval(rotationTimer);
+      rotationTimer = null;
+    }
+    if (promotions.length < 2) return;
+    rotationTimer = setInterval(() => {
+      currentIndex = (currentIndex + 1) % promotions.length;
+      renderRail();
+      renderFeatured();
+    }, 7000);
+  }
+
+  $("featured-prev")?.addEventListener("click", () => {
+    if (promotions.length < 2) return;
+    currentIndex = (currentIndex - 1 + promotions.length) % promotions.length;
+    renderRail();
+    renderFeatured();
+    restartRotation();
+  });
+
+  $("featured-next")?.addEventListener("click", () => {
+    if (promotions.length < 2) return;
+    currentIndex = (currentIndex + 1) % promotions.length;
+    renderRail();
+    renderFeatured();
+    restartRotation();
+  });
+
   async function loadPromotions() {
     if (
       !supaCfg.url ||
@@ -379,10 +447,10 @@ document.addEventListener("fullscreenchange", () => {
 
       if (error) throw error;
 
-      promotions = data && data.length ? data : samplePromotions;
+      promotions = Array.isArray(data) ? data : [];
     } catch (error) {
-      console.warn("Could not load Supabase promotions; showing samples.", error);
-      promotions = samplePromotions;
+      console.warn("Could not load Supabase promotions.", error);
+      promotions = [];
     }
 
     currentIndex = 0;
