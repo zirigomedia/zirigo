@@ -250,10 +250,7 @@
 
   player.style.display = "none";
   document.body.style.overflow = "";
-}
-  });
-
-  
+} 
 
 fullButton.addEventListener("click", async () => {
   try {
