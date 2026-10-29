@@ -161,6 +161,7 @@
   document.body.appendChild(player);
 
   const frame = $("zirigo-player-frame");
+  const trailerVideo = $("zirigo-trailer-video");
   const closeButton = $("zirigo-player-close");
   const fullButton = $("zirigo-player-fullscreen");
   const playerTitle = $("zirigo-player-title");
