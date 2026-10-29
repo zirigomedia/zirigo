@@ -235,6 +235,8 @@
       setStatus("Saving promotion…");
 
       const title = $("promo-title").value.trim();
+      const tagline = $("promo-tagline").value.trim();
+      const genre = $("promo-genre").value.trim();
       const description = $("promo-description").value.trim();
       const trailerUrl = $("promo-trailer").value.trim();
       const releaseDate = $("promo-date").value || null;
