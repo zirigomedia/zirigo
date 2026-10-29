@@ -139,18 +139,23 @@
       </div>
 
       <div class="zirigo-player-screen">
-        <iframe
-          id="zirigo-player-frame"
-          title="ZIRIGO video player"
-          src=""
-          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-          allowfullscreen
-          referrerpolicy="strict-origin-when-cross-origin">
-        </iframe>
-      </div>
+  <iframe
+    id="zirigo-player-frame"
+    title="ZIRIGO film player"
+    src=""
+    allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+    allowfullscreen
+    referrerpolicy="strict-origin-when-cross-origin">
+  </iframe>
 
-      <p class="zirigo-player-title" id="zirigo-player-title"></p>
-    </div>
+  <video
+    id="zirigo-trailer-video"
+    controls
+    playsinline
+    preload="metadata"
+    style="display:none;width:100%;height:100%;object-fit:contain;background:#000">
+  </video>
+</div>
   `;
 
   document.body.appendChild(player);
