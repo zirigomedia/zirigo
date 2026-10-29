@@ -167,23 +167,28 @@
   const playerTitle = $("zirigo-player-title");
 
   function openPlayer(input, title) {
-    const id = youtubeId(input);
+  const id = youtubeId(input);
 
-    if (!id) {
-      alert("A valid YouTube video link has not been added to this promotion yet.");
-      return;
-    }
-
-    frame.src =
-      "https://www.youtube-nocookie.com/embed/" +
-      encodeURIComponent(id) +
-      "?autoplay=1&rel=0&playsinline=1";
-
-    playerTitle.textContent = title || "ZIRIGO";
-    player.style.display = "flex";
-    document.body.style.overflow = "hidden";
-    closeButton.focus();
+  if (!id) {
+    alert("This film does not have a valid YouTube video ID.");
+    return;
   }
+
+  trailerVideo.pause();
+  trailerVideo.removeAttribute("src");
+  trailerVideo.style.display = "none";
+  frame.style.display = "block";
+
+  frame.src =
+    "https://www.youtube-nocookie.com/embed/" +
+    encodeURIComponent(id) +
+    "?autoplay=1&rel=0&playsinline=1";
+
+  playerTitle.textContent = title || "ZIRIGO";
+  player.style.display = "flex";
+  document.body.style.overflow = "hidden";
+  closeButton.focus();
+}
 
   async function closePlayer() {
     if (document.fullscreenElement && document.exitFullscreen) {
