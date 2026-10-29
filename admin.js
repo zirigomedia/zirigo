@@ -343,6 +343,8 @@
         posterToDelete = null;
 
         $("promo-title").value = promo.title || "";
+        $("promo-tagline").value = promo.tagline || "";
+        $("promo-genre").value = promo.genre || ""; 
         $("promo-description").value = promo.description || "";
         $("promo-trailer").value = promo.trailer_url || "";
         $("promo-date").value = promo.release_date || "";
