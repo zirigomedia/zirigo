@@ -190,6 +190,49 @@
   closeButton.focus();
 }
 
+  function openUploadedTrailer(url, title) {
+  if (!url) {
+    alert("A trailer has not been uploaded for this film yet.");
+    return;
+  }
+
+  let parsedUrl;
+
+  try {
+    parsedUrl = new URL(url);
+  } catch (_) {
+    alert("This trailer URL is invalid.");
+    return;
+  }
+
+  if (parsedUrl.protocol !== "https:") {
+    alert("The trailer must use a secure HTTPS URL.");
+    return;
+  }
+
+  frame.src = "";
+  frame.style.display = "none";
+
+  trailerVideo.pause();
+  trailerVideo.src = parsedUrl.href;
+  trailerVideo.style.display = "block";
+  trailerVideo.load();
+
+  playerTitle.textContent = title ? `${title} — Trailer` : "ZIRIGO Trailer";
+  player.style.display = "flex";
+  document.body.style.overflow = "hidden";
+
+  closeButton.focus();
+
+  const playback = trailerVideo.play();
+
+  if (playback && typeof playback.catch === "function") {
+    playback.catch(() => {
+      // The viewer can start playback using the video controls.
+    });
+  }
+  }
+  
   async function closePlayer() {
     if (document.fullscreenElement && document.exitFullscreen) {
       try {
