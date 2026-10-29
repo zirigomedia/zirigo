@@ -252,6 +252,21 @@
   document.body.style.overflow = "";
 } 
 
+  // Fix the player close button
+closeButton.addEventListener("click", closePlayer);
+
+// Close when tapping outside the video
+player.addEventListener("click", event => {
+  if (event.target === player) closePlayer();
+});
+
+// Close when pressing Escape
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && player.style.display !== "none") {
+    closePlayer();
+  }
+});
+  
 fullButton.addEventListener("click", async () => {
   try {
     if (document.fullscreenElement) {
