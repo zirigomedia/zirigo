@@ -265,6 +265,8 @@
 
       const record = {
         title,
+        tagline,
+        genre,
         description,
         trailer_url: trailerUrl || null,
         release_date: releaseDate,
