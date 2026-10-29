@@ -381,36 +381,33 @@ document.addEventListener("fullscreenchange", () => {
     restartRotation();
   });
 
-  watchButton.addEventListener("click", () => {
-    const promo = currentPromo();
-
-    if (promo.status !== "Now Available") return;
-
-    // The current database schema uses trailer_url as the available video URL.
-    openPlayer(promo.trailer_url, promo.title);
-  });
-
   trailerButton.addEventListener("click", () => {
-    const promo = currentPromo();
+  const promo = currentPromo();
 
-    if (youtubeId(promo.trailer_url)) {
-      openPlayer(promo.trailer_url, `${promo.title} — Trailer`);
-    }
-  });
+  if (youtubeId(promo.trailer_url)) {
+    openPlayer(promo.trailer_url, `${promo.title} — Trailer`);
+  }
+});
 
-  detailsButton.addEventListener("click", () => {
-    const promo = currentPromo();
+detailsButton.addEventListener("click", () => {
+  const promo = currentPromo();
 
-    $("featured-detail-title").textContent = promo.title || "Film details";
-    $("featured-detail-description").textContent =
-      promo.description || "More details will be announced soon.";
+  $("featured-detail-title").textContent =
+    promo.title || "Film details";
 
-    $("featured-detail-meta").textContent =
-      `${promo.status || "Coming Soon"}` +
-      (promo.release_date ? ` • Release date: ${promo.release_date}` : "");
+  $("featured-detail-description").textContent =
+    promo.synopsis || promo.description || "More details will be announced soon.";
 
-    detailsModal.classList.add("is-open");
-  });
+  const genre = promo.genre ? ` • Genre: ${promo.genre}` : "";
+  const releaseDate = promo.release_date
+    ? ` • Release date: ${promo.release_date}`
+    : "";
+
+  $("featured-detail-meta").textContent =
+    `${promo.status || "Coming Soon"}${genre}${releaseDate}`;
+
+  detailsModal.classList.add("is-open");
+});
 
   async function loadPromotions() {
     if (
