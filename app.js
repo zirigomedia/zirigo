@@ -330,9 +330,15 @@ document.addEventListener("fullscreenchange", () => {
          aria-labelledby="featured-detail-title">
       <button class="featured-details-close" type="button"
               aria-label="Close details">×</button>
+      <img id="featured-detail-poster" alt=""
+           style="width:100%;max-height:300px;object-fit:contain;border-radius:8px;margin-bottom:16px;">
       <h2 id="featured-detail-title"></h2>
+      <p id="featured-detail-tagline" style="color:#ffd15c;font-weight:600;"></p>
+      <h3>About this film</h3>
       <p id="featured-detail-description"></p>
       <p id="featured-detail-meta"></p>
+      <button id="featured-detail-trailer" class="button button-gold"
+              type="button" style="display:none;">▶ Watch Trailer</button>
     </div>
   `;
   document.body.appendChild(detailsModal);
@@ -345,126 +351,6 @@ document.addEventListener("fullscreenchange", () => {
       detailsModal.classList.remove("is-open");
     }
   });
-
-  function posterFor(promo) {
-    return promo.poster_url || samplePromotions[0].poster_url;
-  }
-
-  function currentPromo() {
-    return promotions[currentIndex];
-  }
-
-  function renderFeatured() {
-  if (!promotions.length) return;
-
-  const promo = currentPromo();
-  const poster = posterFor(promo);
-
-  backdrop.style.backgroundImage =
-    `url("${poster.replace(/["\\]/g, "")}")`;
-
-  titleEl.textContent = promo.title || "Featured film";
-
-  // Show the short tagline on the billboard.
-  descriptionEl.textContent =
-    promo.tagline || promo.description || "Discover this story from ZIRIGO.";
-
-  statusEl.textContent =
-    promo.status === "Now Available" ? "NOW AVAILABLE" : "COMING SOON";
-
-  noteEl.textContent = promo.sample
-    ? "Sample promotion preview."
-    : promo.status === "Now Available"
-      ? "Available to watch through ZIRIGO."
-      : "Coming soon on ZIRIGO.";
-
-  // Disable the trailer button if no valid trailer link exists.
-  trailerButton.disabled = !promo.trailer_url;
-
-  rail.querySelectorAll(".poster-tile").forEach((tile, index) => {
-    tile.classList.toggle("is-active", index === currentIndex);
-    tile.setAttribute(
-      "aria-pressed",
-      index === currentIndex ? "true" : "false"
-    );
-  });
-}
-  function renderRail() {
-    rail.innerHTML = promotions.map((promo, index) => `
-      <button
-        type="button"
-        class="poster-tile ${index === currentIndex ? "is-active" : ""}"
-        data-promo-index="${index}"
-        aria-pressed="${index === currentIndex}"
-        aria-label="Feature ${escapeHTML(promo.title)}">
-        <img src="${escapeHTML(posterFor(promo))}" alt="" loading="lazy">
-        <span>${escapeHTML(promo.title || "Featured film")}</span>
-      </button>
-    `).join("");
-
-    rail.querySelectorAll(".poster-tile").forEach(tile => {
-      tile.addEventListener("click", () => {
-        currentIndex = Number(tile.dataset.promoIndex);
-        renderFeatured();
-        restartRotation();
-      });
-    });
-  }
-
-  function selectPromo(index) {
-    if (!promotions.length) return;
-
-    currentIndex = (index + promotions.length) % promotions.length;
-    renderFeatured();
-  }
-
-  function restartRotation() {
-    if (rotationTimer) clearInterval(rotationTimer);
-
-    if (promotions.length > 1) {
-      rotationTimer = setInterval(() => {
-        selectPromo(currentIndex + 1);
-      }, 7000);
-    }
-  }
-
-  $("featured-prev").addEventListener("click", () => {
-    selectPromo(currentIndex - 1);
-    restartRotation();
-  });
-
-  $("featured-next").addEventListener("click", () => {
-    selectPromo(currentIndex + 1);
-    restartRotation();
-  });
-
-  trailerButton.addEventListener("click", () => {
-  const promo = currentPromo();
-
-  if (promo.trailer_url) {
-    openUploadedTrailer(promo.trailer_url, promo.title);
-  }
-});
-
-detailsButton.addEventListener("click", () => {
-  const promo = currentPromo();
-
-  $("featured-detail-title").textContent =
-    promo.title || "Film details";
-
-  $("featured-detail-description").textContent =
-    promo.synopsis || promo.description || "More details will be announced soon.";
-
-  const genre = promo.genre ? ` • Genre: ${promo.genre}` : "";
-  const releaseDate = promo.release_date
-    ? ` • Release date: ${promo.release_date}`
-    : "";
-
-  $("featured-detail-meta").textContent =
-    `${promo.status || "Coming Soon"}${genre}${releaseDate}`;
-
-  detailsModal.classList.add("is-open");
-});
 
   async function loadPromotions() {
     if (
