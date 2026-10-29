@@ -368,7 +368,7 @@ document.addEventListener("fullscreenchange", () => {
       : "Coming soon on ZIRIGO.";
 
   // Disable the trailer button if no valid trailer link exists.
-  trailerButton.disabled = !youtubeId(promo.trailer_url);
+  trailerButton.disabled = !promo.trailer_url;
 
   rail.querySelectorAll(".poster-tile").forEach((tile, index) => {
     tile.classList.toggle("is-active", index === currentIndex);
