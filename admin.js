@@ -219,7 +219,6 @@
 
     return data.publicUrl;
   }
-
   
   async function uploadTrailer(file) {
     if (!file) return null;
@@ -260,9 +259,7 @@
         upsert: false
       });
 
-    if (uploadError) {
-      throw uploadError;
-    }
+    if (uploadError) throw uploadError;
 
     const { data } = supabase
       .storage
@@ -282,6 +279,7 @@
     saveButton.disabled = true;
 
     let uploadedPosterUrl = null;
+    let uploadedTrailerUrl = null;
 
     try {
       setStatus("Saving promotion…");
@@ -290,29 +288,29 @@
       const tagline = $("promo-tagline").value.trim();
       const genre = $("promo-genre").value.trim();
       const description = $("promo-description").value.trim();
-      const trailerUrl = $("promo-trailer").value.trim();
       const releaseDate = $("promo-date").value || null;
       const status = $("promo-status").value;
       const sortOrder = Number($("promo-order").value) || 0;
       const isActive = $("promo-active").value === "true";
-      const file = $("promo-poster").files[0];
+
+      const posterFile = $("promo-poster").files[0];
+      const trailerFile = $("promo-trailer").files[0];
 
       if (!title) {
         throw new Error("Please enter a promotion title.");
       }
 
-      if (trailerUrl && !extractYouTubeId(trailerUrl)) {
-        throw new Error(
-          "Please enter a valid YouTube video, Shorts, or youtu.be link."
-        );
-      }
-
-      if (!editingId && !file) {
+      if (!editingId && !posterFile) {
         throw new Error("Please select a poster image.");
       }
 
-      if (file) {
-        uploadedPosterUrl = await uploadPoster(file);
+      if (posterFile) {
+        uploadedPosterUrl = await uploadPoster(posterFile);
+      }
+
+      if (trailerFile) {
+        setStatus("Uploading trailer…");
+        uploadedTrailerUrl = await uploadTrailer(trailerFile);
       }
 
       const record = {
@@ -320,7 +318,9 @@
         tagline,
         genre,
         description,
-        trailer_url: trailerUrl || null,
+        trailer_url: trailerFile
+          ? uploadedTrailerUrl
+          : (editingId ? editingTrailerUrl : null),
         release_date: releaseDate,
         status,
         sort_order: sortOrder,
@@ -331,6 +331,8 @@
       if (uploadedPosterUrl) {
         record.poster_url = uploadedPosterUrl;
       }
+
+      setStatus("Saving promotion details…");
 
       let result;
 
@@ -349,9 +351,7 @@
           .single();
       }
 
-      if (result.error) {
-        throw result.error;
-      }
+      if (result.error) throw result.error;
 
       setStatus("Promotion saved successfully!");
       clearForm();
@@ -364,14 +364,20 @@
         "Could not save promotion: " + getErrorMessage(error)
       );
 
-      // The uploaded file may be unused if the database write fails.
-      // It is intentionally not deleted automatically.
       if (uploadedPosterUrl) {
         console.warn(
-          "A poster was uploaded but may not be attached to a promotion:",
+          "Poster uploaded but may not be attached:",
           uploadedPosterUrl
         );
       }
+
+      if (uploadedTrailerUrl) {
+        console.warn(
+          "Trailer uploaded but may not be attached:",
+          uploadedTrailerUrl
+        );
+      }
+
     } finally {
       busy = false;
       saveButton.disabled = false;
