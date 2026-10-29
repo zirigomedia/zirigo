@@ -298,43 +298,40 @@ document.addEventListener("fullscreenchange", () => {
   }
 
   function renderFeatured() {
-    if (!promotions.length) return;
+  if (!promotions.length) return;
 
-    const promo = currentPromo();
-    const poster = posterFor(promo);
+  const promo = currentPromo();
+  const poster = posterFor(promo);
 
-    backdrop.style.backgroundImage =
-      `url("${poster.replace(/["\\]/g, "")}")`;
+  backdrop.style.backgroundImage =
+    `url("${poster.replace(/["\\]/g, "")}")`;
 
-    titleEl.textContent = promo.title || "Featured film";
-    descriptionEl.textContent =
-      promo.description || "Discover this story from ZIRIGO.";
+  titleEl.textContent = promo.title || "Featured film";
 
-    statusEl.textContent =
-      promo.status === "Now Available" ? "NOW AVAILABLE" : "COMING SOON";
+  // Show the short tagline on the billboard.
+  descriptionEl.textContent =
+    promo.tagline || promo.description || "Discover this story from ZIRIGO.";
 
-    noteEl.textContent = promo.sample
-      ? "Sample promotion preview. Add your own films through the ZIRIGO admin dashboard."
-      : promo.status === "Now Available"
-        ? "Available to watch through ZIRIGO's embedded player."
-        : "This title has not been marked as available yet.";
+  statusEl.textContent =
+    promo.status === "Now Available" ? "NOW AVAILABLE" : "COMING SOON";
 
-    watchButton.textContent =
-      promo.status === "Now Available" ? "▶ WATCH FILM" : "COMING SOON";
+  noteEl.textContent = promo.sample
+    ? "Sample promotion preview."
+    : promo.status === "Now Available"
+      ? "Available to watch through ZIRIGO."
+      : "Coming soon on ZIRIGO.";
 
-    watchButton.disabled = promo.status !== "Now Available";
+  // Disable the trailer button if no valid trailer link exists.
+  trailerButton.disabled = !youtubeId(promo.trailer_url);
 
-    trailerButton.disabled = !youtubeId(promo.trailer_url);
-
-    rail.querySelectorAll(".poster-tile").forEach((tile, index) => {
-      tile.classList.toggle("is-active", index === currentIndex);
-      tile.setAttribute(
-        "aria-pressed",
-        index === currentIndex ? "true" : "false"
-      );
-    });
-  }
-
+  rail.querySelectorAll(".poster-tile").forEach((tile, index) => {
+    tile.classList.toggle("is-active", index === currentIndex);
+    tile.setAttribute(
+      "aria-pressed",
+      index === currentIndex ? "true" : "false"
+    );
+  });
+}
   function renderRail() {
     rail.innerHTML = promotions.map((promo, index) => `
       <button
