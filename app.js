@@ -234,31 +234,23 @@
   }
   
   async function closePlayer() {
-    if (document.fullscreenElement && document.exitFullscreen) {
-      try {
-        await document.exitFullscreen();
-      } catch (_) {}
-    }
-
-    frame.src = "";
-    player.style.display = "none";
-    document.body.style.overflow = "";
+  if (document.fullscreenElement && document.exitFullscreen) {
+    try {
+      await document.exitFullscreen();
+    } catch (_) {}
   }
 
-  closeButton.addEventListener("click", closePlayer);
+  trailerVideo.pause();
+  trailerVideo.removeAttribute("src");
+  trailerVideo.load();
+  trailerVideo.style.display = "none";
 
-  player.addEventListener("click", event => {
-    if (event.target === player) closePlayer();
-  });
+  frame.src = "";
+  frame.style.display = "block";
 
-  document.addEventListener("keydown", event => {
-    if (
-      event.key === "Escape" &&
-      player.style.display !== "none" &&
-      !document.fullscreenElement
-    ) {
-      closePlayer();
-    }
+  player.style.display = "none";
+  document.body.style.overflow = "";
+}
   });
 
   
