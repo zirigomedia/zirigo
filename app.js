@@ -184,7 +184,7 @@
     encodeURIComponent(id) +
     "?autoplay=1&rel=0&playsinline=1";
 
-  playerTitle.textContent = title || "ZIRIGO";
+  if (playerTitle) playerTitle.textContent = title || "ZIRIGO";
   player.style.display = "flex";
   document.body.style.overflow = "hidden";
   closeButton.focus();
