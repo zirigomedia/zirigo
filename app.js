@@ -258,7 +258,6 @@ document.addEventListener("fullscreenchange", () => {
   const statusEl = $("featured-status");
   const noteEl = $("featured-note");
   const rail = $("poster-rail");
-  const watchButton = $("featured-watch");
   const trailerButton = $("featured-trailer");
   const detailsButton = $("featured-details");
 
