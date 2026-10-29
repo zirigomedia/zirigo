@@ -486,7 +486,7 @@ detailsButton.addEventListener("click", () => {
 
       const { data, error } = await client
         .from("promotions")
-        .select("id,title,description,poster_url,trailer_url,release_date,status,is_active,sort_order,created_at")
+        .select("id,title,tagline,genre,description,poster_url,trailer_url,release_date,status,is_active,sort_order,created_at")
         .eq("is_active", true)
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false });
