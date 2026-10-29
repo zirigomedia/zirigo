@@ -1,4 +1,4 @@
-const CACHE_NAME = "zirigo-cache-v1";
+const CACHE_NAME = "zirigo-cache-v2";
 
 const APP_FILES = [
 "./",
