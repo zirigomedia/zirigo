@@ -400,7 +400,8 @@
       if (action === "edit") {
         editingId = promo.id;
         editingPosterUrl = promo.poster_url;
-        posterToDelete = null;
+editingTrailerUrl = promo.trailer_url || null;
+posterToDelete = null;
 
         $("promo-title").value = promo.title || "";
         $("promo-tagline").value = promo.tagline || "";
