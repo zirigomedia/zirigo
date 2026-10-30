@@ -214,11 +214,6 @@ fullButton.addEventListener("click", async () => {
       return;
     }
 
-    if (screen.orientation && screen.orientation.lock) {
-      try {
-        await screen.orientation.lock("landscape");
-      } catch (_) {}
-    }
   } catch (_) {
     alert("Please use YouTube's fullscreen button and enable Auto-rotate on your phone.");
   }
@@ -232,12 +227,6 @@ document.addEventListener("fullscreenchange", () => {
   fullButton.textContent = isFullscreen
     ? "↙ Normal"
     : "⛶ Fullscreen";
-
-  if (!isFullscreen && screen.orientation?.unlock) {
-    try {
-      screen.orientation.unlock();
-    } catch (_) {}
-  }
 });
 
   // Billboard elements.
@@ -640,6 +629,20 @@ const settingsCloseButton = $("zirigo-settings-close");
 const privacyOverlay = $("zirigo-privacy-overlay");
 const privacyOpenButton = $("zirigo-privacy-open");
 const privacyCloseButton = $("zirigo-privacy-close");
+
+function applyZirigoTheme(theme) {
+  const selected = theme === "light" ? "light" : "dark";
+  document.documentElement.dataset.theme = selected;
+  try { localStorage.setItem("zirigo-theme", selected); } catch (_) {}
+  document.querySelectorAll("[data-theme-choice]").forEach(button => {
+    button.setAttribute("aria-pressed", String(button.dataset.themeChoice === selected));
+  });
+}
+
+applyZirigoTheme(document.documentElement.dataset.theme || "dark");
+document.querySelectorAll("[data-theme-choice]").forEach(button => {
+  button.addEventListener("click", () => applyZirigoTheme(button.dataset.themeChoice));
+});
 
 let settingsPreviousFocus = null;
 
