@@ -253,6 +253,9 @@
     if (file.size > 50 * 1024 * 1024) {
       throw new Error("The trailer must be 50 MB or smaller. Please compress it and try again.");
     }
+    if (!window.tus?.Upload) {
+      throw new Error("The resumable upload service did not load. Refresh the page and try again.");
+    }
 
     const extension = ({
       "video/mp4": "mp4",
@@ -265,47 +268,45 @@
     const accessToken = sessionData.session?.access_token;
     if (!accessToken) throw new Error("Your admin session has expired. Please sign in again.");
 
-    const encodedPath = path.split("/").map(encodeURIComponent).join("/");
-    const endpoint = config.url.replace(/\/$/, "") +
-      "/storage/v1/object/promotion-trailers/" + encodedPath;
-
     showTrailerProgress(true);
     updateTrailerProgress(0, file.size);
+    const endpoint = config.url.replace(/\\/$/, "") + "/storage/v1/upload/resumable";
 
     await new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", endpoint);
-      xhr.setRequestHeader("apikey", config.publishableKey);
-      xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
-      xhr.setRequestHeader("Content-Type", file.type);
-      xhr.setRequestHeader("x-upsert", "false");
-      xhr.setRequestHeader("cache-control", "3600");
-      xhr.upload.addEventListener("progress", event => {
-        if (event.lengthComputable) updateTrailerProgress(event.loaded, event.total);
-      });
-      xhr.addEventListener("load", () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
+      let settled = false;
+      const upload = new window.tus.Upload(file, {
+        endpoint,
+        chunkSize: 6 * 1024 * 1024,
+        retryDelays: [0, 1000, 3000, 5000, 10000, 20000],
+        uploadDataDuringCreation: true,
+        removeFingerprintOnSuccess: true,
+        headers: {
+          apikey: config.publishableKey,
+          Authorization: "Bearer " + accessToken,
+          "x-upsert": "false"
+        },
+        metadata: {
+          bucketName: "promotion-trailers",
+          objectName: path,
+          contentType: file.type,
+          cacheControl: "3600"
+        },
+        onError(error) {
+          if (settled) return;
+          settled = true;
+          reject(new Error("Resumable trailer upload failed: " + (error?.message || "Please check your connection and retry.")));
+        },
+        onProgress(bytesUploaded, bytesTotal) {
+          updateTrailerProgress(bytesUploaded, bytesTotal);
+        },
+        onSuccess() {
+          if (settled) return;
+          settled = true;
           updateTrailerProgress(file.size, file.size);
           resolve();
-          return;
         }
-        let message = "Storage returned HTTP " + xhr.status + ".";
-        try {
-          const body = JSON.parse(xhr.responseText);
-          message = body.message || body.error || body.msg || message;
-        } catch {
-          if (xhr.responseText) message += " " + xhr.responseText.slice(0, 250);
-        }
-        reject(new Error("Trailer upload failed: " + message));
       });
-      xhr.addEventListener("error", () =>
-        reject(new Error("Network error during trailer upload. Check your connection and try again.")));
-      xhr.addEventListener("timeout", () =>
-        reject(new Error("Trailer upload timed out. Check your connection and try again.")));
-      xhr.addEventListener("abort", () =>
-        reject(new Error("Trailer upload was cancelled.")));
-      xhr.timeout = 10 * 60 * 1000;
-      xhr.send(file);
+      upload.start();
     });
 
     const { data } = supabase.storage.from("promotion-trailers").getPublicUrl(path);
