@@ -1188,3 +1188,19 @@ body.zirigo-intro-active { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .zirigo-intro, .zirigo-intro-logo, .zirigo-intro-actions button { animation:none; transition:none; }
 }
+
+
+/* Bright mode: keep the Watch Trailer action readable on the light theme. */
+:root[data-theme="light"] .featured-actions .button-outline {
+  color: #332407;
+  background: linear-gradient(135deg, #fff8e8 0%, #f4e6c7 100%);
+  border: 1px solid #9a690d;
+  box-shadow: 0 3px 12px #3b2a0d18;
+}
+
+:root[data-theme="light"] .featured-actions .button-outline:hover {
+  color: #241800;
+  background: linear-gradient(135deg, #ffedbd 0%, #f6c85f 100%);
+  border-color: #76500a;
+  box-shadow: 0 5px 18px #3b2a0d24;
+}
