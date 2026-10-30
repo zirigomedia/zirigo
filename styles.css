@@ -1055,3 +1055,57 @@ animation: none;
 :root[data-theme="light"] .featured-copy h2 { text-shadow: 0 3px 20px #000, 0 1px 4px #000; }
 :root[data-theme="light"] .featured-description,
 :root[data-theme="light"] .featured-note { text-shadow: 0 2px 12px #000; }
+
+
+/* Bright mode: give the Vision section a clean white card-like surface. */
+:root[data-theme="light"] .about-section {
+  background: #ffffff;
+  border-top-color: #e5e0d6;
+}
+:root[data-theme="light"] .about-section .eyebrow {
+  color: #9a6200;
+}
+:root[data-theme="light"] .about-section h2 {
+  color: #211f1a;
+}
+:root[data-theme="light"] .about-section .about-copy {
+  color: #403c34;
+}
+:root[data-theme="light"] .about-section .pill-row span {
+  color: #403c34;
+  border-color: #d9d3c8;
+  background: #f7f5f0;
+}
+
+/* Bright mode: keep billboard and details headings clearly visible. */
+:root[data-theme="light"] .featured-copy h2 {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+  text-shadow: 0 3px 20px #000, 0 1px 4px #000;
+}
+:root[data-theme="light"] .featured-details-card {
+  background: #ffffff;
+  border-color: #ded9ce;
+  color: #211f1a;
+}
+:root[data-theme="light"] .featured-details-card h2 {
+  color: #211f1a !important;
+  -webkit-text-fill-color: #211f1a;
+}
+:root[data-theme="light"] .featured-details-card h3 {
+  color: #211f1a;
+}
+:root[data-theme="light"] .featured-details-card p {
+  color: #514c43;
+}
+:root[data-theme="light"] .featured-details-close {
+  background: #f5f3ee;
+  color: #805000;
+  border-color: #d8c9a9;
+}
+
+/* Ensure the page itself never applies a sideways transform. */
+html, body {
+  transform: none !important;
+  rotate: none !important;
+}
