@@ -1138,3 +1138,53 @@ html, body {
   color: #17130c !important;
   background: #f6a91a;
 }
+
+
+/* ZIRIGO startup ident */
+body.zirigo-intro-active { overflow: hidden; }
+.zirigo-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 200000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: radial-gradient(ellipse at center, #17130b 0%, #080808 58%, #000 100%);
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .65s ease, visibility .65s ease;
+}
+.zirigo-intro[hidden] { display: none !important; }
+.zirigo-intro.is-leaving { opacity: 0; visibility: hidden; pointer-events: none; }
+.zirigo-intro-content { display:flex; flex-direction:column; align-items:center; text-align:center; }
+.zirigo-intro-logo {
+  width: clamp(104px, 24vw, 150px);
+  height: clamp(104px, 24vw, 150px);
+  object-fit: contain;
+  filter: drop-shadow(0 0 28px #f6a91a35);
+  animation: zirigo-logo-arrive .8s ease both;
+}
+.zirigo-intro-wordmark {
+  margin: 12px 0 0;
+  color: #fff8ec;
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: clamp(27px, 6vw, 38px);
+  font-weight: 800;
+  letter-spacing: .28em;
+  text-indent: .28em;
+}
+.zirigo-intro-line { width: 54px; height: 2px; margin: 17px 0 12px; background: #f6a91a; box-shadow: 0 0 14px #f6a91a88; }
+.zirigo-intro-tagline { margin:0; color:#b9a783; font-size:9px; letter-spacing:.24em; }
+.zirigo-intro-actions { display:flex; gap:10px; margin-top:30px; flex-wrap:wrap; justify-content:center; }
+.zirigo-intro-actions button {
+  min-height:42px; padding:0 17px; border-radius:4px; font:700 10px 'DM Sans',Arial,sans-serif;
+  letter-spacing:.1em; cursor:pointer; transition:background .2s ease, opacity .2s ease;
+}
+#zirigo-intro-enter { color:#171006; background:linear-gradient(135deg,#ffd76a,#f6a91a); border:1px solid #ffd76a; }
+#zirigo-intro-enter:disabled { opacity:.6; cursor:wait; }
+#zirigo-intro-skip { color:#e8dfce; background:transparent; border:1px solid #6b542b; }
+.zirigo-intro-hint { margin:11px 0 0; color:#777064; font-size:10px; }
+@keyframes zirigo-logo-arrive { from { opacity:0; transform:scale(.92); } to { opacity:1; transform:scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  .zirigo-intro, .zirigo-intro-logo, .zirigo-intro-actions button { animation:none; transition:none; }
+}
