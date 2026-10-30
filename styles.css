@@ -1004,3 +1004,43 @@ cursor: pointer;
 animation: none;
 }
 }
+
+
+/* ZIRIGO visitor-selectable Bright theme */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f5f3ee;
+  --panel: #ffffff;
+  --panel2: #ece9e1;
+  --text: #211f1a;
+  --muted: #625e55;
+  --line: #ded9ce;
+}
+:root[data-theme="light"] body { background: var(--bg); color: var(--text); }
+:root[data-theme="light"] .topbar { background: #fffFf2; border-bottom-color: #ddd8ce; }
+:root[data-theme="light"] .topbar nav { color: #403c34; }
+:root[data-theme="light"] .hero { background: radial-gradient(ellipse at 76% 50%,#f6a91a22 0%,transparent 43%),linear-gradient(105deg,#fff 25%,#f3f0e8 100%); }
+:root[data-theme="light"] .hero-copy,
+:root[data-theme="light"] .text-link,
+:root[data-theme="light"] .about-copy { color: #514c43; }
+:root[data-theme="light"] .button-outline { color: #29251e; border-color: #777064; }
+:root[data-theme="light"] .video-card,
+:root[data-theme="light"] .channel-callout,
+:root[data-theme="light"] .status { background: #fff; color: #29251e; border-color: #ded9ce; }
+:root[data-theme="light"] .video-info p,
+:root[data-theme="light"] .video-state p { color: #625e55; }
+:root[data-theme="light"] .video-state { color: #29251e; background: linear-gradient(145deg,#fff,#f0ede5); }
+:root[data-theme="light"] .video-state h3 { color: #29251e; }
+:root[data-theme="light"] footer { background: #eae7df; color: #514c43; }
+:root[data-theme="light"] .settings-panel { background: #fff; color: #29251e; border-color: #ded9ce; }
+:root[data-theme="light"] .settings-item { color: #29251e; border-color: #e8e3d9; }
+:root[data-theme="light"] .settings-item small,
+:root[data-theme="light"] .settings-section h4,
+:root[data-theme="light"] .settings-panel p { color: #625e55; }
+:root[data-theme="light"] .settings-theme-note { color: #625e55; }
+.settings-theme-choice { display:flex; gap:10px; }
+.theme-choice { flex:1; padding:12px; border:1px solid #665022; border-radius:7px; background:#171614; color:#f7f4ee; font:inherit; font-weight:700; cursor:pointer; }
+.theme-choice[aria-pressed="true"] { border-color:#f6a91a; box-shadow:inset 0 0 0 1px #f6a91a; color:#ffd15c; }
+.settings-theme-note { display:block; margin-top:9px; color:#aaa69e; font-size:12px; }
+:root[data-theme="light"] .theme-choice { background:#f2efe8; color:#29251e; }
+:root[data-theme="light"] .theme-choice[aria-pressed="true"] { color:#8a5600; }
