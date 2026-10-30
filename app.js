@@ -210,12 +210,19 @@ fullButton.addEventListener("click", async () => {
     } else if (player.webkitRequestFullscreen) {
       player.webkitRequestFullscreen();
     } else {
-      alert("Fullscreen isn't supported here. Please use YouTube's fullscreen button.");
+      alert("Fullscreen isn't supported here. Please use the video player's fullscreen control.");
       return;
     }
 
+    // Request landscape only while the player is fullscreen; release it on exit.
+    try {
+      if (screen.orientation?.lock) await screen.orientation.lock("landscape");
+    } catch (_) {
+      // Some browsers only allow orientation locking in installed/PWA contexts.
+    }
+
   } catch (_) {
-    alert("Please use YouTube's fullscreen button and enable Auto-rotate on your phone.");
+    alert("Fullscreen could not be opened. Try your browser's fullscreen control.");
   }
 });
 
@@ -223,10 +230,10 @@ fullButton.addEventListener("click", async () => {
 // Restore normal orientation when leaving fullscreen
 document.addEventListener("fullscreenchange", () => {
   const isFullscreen = !!document.fullscreenElement;
-
-  fullButton.textContent = isFullscreen
-    ? "↙ Normal"
-    : "⛶ Fullscreen";
+  fullButton.textContent = isFullscreen ? "↙ Normal" : "⛶ Fullscreen";
+  if (!isFullscreen) {
+    try { screen.orientation?.unlock?.(); } catch (_) {}
+  }
 });
 
   // Billboard elements.
