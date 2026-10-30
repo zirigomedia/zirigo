@@ -15,6 +15,25 @@
 </head>
 <body>
 
+  <!-- ZIRIGO startup ident -->
+  <section id="zirigo-intro" class="zirigo-intro" aria-label="ZIRIGO introduction">
+    <div class="zirigo-intro-content">
+      <img src="assets/zirigo-logo.png" alt="ZIRIGO" class="zirigo-intro-logo">
+      <p class="zirigo-intro-wordmark">ZIRIGO</p>
+      <span class="zirigo-intro-line"></span>
+      <p class="zirigo-intro-tagline">STORIES THAT STAY WITH YOU</p>
+      <div class="zirigo-intro-actions">
+        <button type="button" id="zirigo-intro-enter">ENTER WITH SOUND</button>
+        <button type="button" id="zirigo-intro-skip">SKIP INTRO</button>
+      </div>
+      <p class="zirigo-intro-hint">Sound is optional</p>
+    </div>
+  </section>
+  <audio id="zirigo-intro-audio" preload="auto">
+    <source src="https://audio.soundbreak.ai/96cddd5b64a88e49a79e5495cd93f599/872ed8273f2a4f6293beb553bb47b24e.mp3" type="audio/mpeg">
+  </audio>
+
+
   <header class="topbar">
     <a class="brand" href="#home" aria-label="ZIRIGO home">
       <img src="assets/zirigo-logo.png" alt="ZIRIGO logo">
@@ -307,7 +326,50 @@
   collection, analytics, advertising and storage practices.
 </p>
 
-   <script src="app.js?v=5"></script>
+   <script>
+  (() => {
+    const intro = document.getElementById("zirigo-intro");
+    const enter = document.getElementById("zirigo-intro-enter");
+    const skip = document.getElementById("zirigo-intro-skip");
+    const audio = document.getElementById("zirigo-intro-audio");
+    if (!intro || !enter || !skip || !audio) return;
+
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      intro.classList.add("is-leaving");
+      audio.pause();
+      window.setTimeout(() => {
+        intro.hidden = true;
+        document.body.classList.remove("zirigo-intro-active");
+      }, 650);
+      try { sessionStorage.setItem("zirigo-intro-seen", "1"); } catch (_) {}
+    };
+
+    try {
+      if (sessionStorage.getItem("zirigo-intro-seen") === "1") {
+        intro.hidden = true;
+        return;
+      }
+    } catch (_) {}
+
+    document.body.classList.add("zirigo-intro-active");
+    enter.addEventListener("click", async () => {
+      enter.disabled = true;
+      try {
+        audio.currentTime = 0;
+        await audio.play();
+      } catch (_) {
+        // If playback is unavailable, continue into the site without sound.
+      }
+      window.setTimeout(finish, 2600);
+    });
+    skip.addEventListener("click", finish);
+  })();
+  </script>
+
+  <script src="app.js?v=5"></script>
         
   </section>
 </div>
