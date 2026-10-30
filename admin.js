@@ -290,7 +290,7 @@
     const accessToken = sessionData.session?.access_token;
     if (!accessToken) throw new Error("Your admin session has expired. Please sign in again.");
 
-    const endpoint = config.url.replace(/\\/$/, "") + "/storage/v1/upload/resumable";
+    const endpoint = config.url.replace(/\/$/, "") + "/storage/v1/upload/resumable";
 
     await new Promise((resolve, reject) => {
       let settled = false;
