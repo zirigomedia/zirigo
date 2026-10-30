@@ -9,6 +9,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
     <link rel="apple-touch-icon" href="assets/icon-192.png">
+    <script>try{document.documentElement.dataset.theme=localStorage.getItem("zirigo-theme")||"dark";}catch(e){}</script>
     <link rel="stylesheet" href="styles.css">
 
 </head>
@@ -188,6 +189,15 @@
 </div>
 
 <div class="settings-section">
+  <h4>APPEARANCE</h4>
+  <div class="settings-theme-choice" role="group" aria-label="Choose site theme">
+    <button type="button" class="theme-choice" data-theme-choice="dark" aria-pressed="true">🌙 Dark</button>
+    <button type="button" class="theme-choice" data-theme-choice="light" aria-pressed="false">☀️ Bright</button>
+  </div>
+  <small class="settings-theme-note">Your choice will be remembered on this device.</small>
+</div>
+
+<div class="settings-section">
   <h4>ABOUT</h4>
   <a class="settings-item" href="#about">
     <span class="settings-item-icon">✦</span>
@@ -296,7 +306,7 @@
   collection, analytics, advertising and storage practices.
 </p>
 
-   <script src="app.js?v=3"></script>
+   <script src="app.js?v=4"></script>
         
   </section>
 </div>
