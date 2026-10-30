@@ -15,25 +15,6 @@
 </head>
 <body>
 
-  <!-- ZIRIGO startup ident -->
-  <section id="zirigo-intro" class="zirigo-intro" aria-label="ZIRIGO introduction">
-    <div class="zirigo-intro-content">
-      <img src="assets/zirigo-logo.png" alt="ZIRIGO" class="zirigo-intro-logo">
-      <p class="zirigo-intro-wordmark">ZIRIGO</p>
-      <span class="zirigo-intro-line"></span>
-      <p class="zirigo-intro-tagline">STORIES THAT STAY WITH YOU</p>
-      <div class="zirigo-intro-actions">
-        <button type="button" id="zirigo-intro-enter">ENTER WITH SOUND</button>
-        <button type="button" id="zirigo-intro-skip">SKIP INTRO</button>
-      </div>
-      <p class="zirigo-intro-hint">Sound is optional</p>
-    </div>
-  </section>
-  <audio id="zirigo-intro-audio" preload="auto">
-    <source src="https://audio.soundbreak.ai/96cddd5b64a88e49a79e5495cd93f599/872ed8273f2a4f6293beb553bb47b24e.mp3" type="audio/mpeg">
-  </audio>
-
-
   <header class="topbar">
     <a class="brand" href="#home" aria-label="ZIRIGO home">
       <img src="assets/zirigo-logo.png" alt="ZIRIGO logo">
@@ -328,44 +309,43 @@
 
    <script>
   (() => {
-    const intro = document.getElementById("zirigo-intro");
-    const enter = document.getElementById("zirigo-intro-enter");
-    const skip = document.getElementById("zirigo-intro-skip");
-    const audio = document.getElementById("zirigo-intro-audio");
-    if (!intro || !enter || !skip || !audio) return;
+    const standalone = window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+    if (!standalone) return;
+
+    const intro = document.createElement("section");
+    intro.className = "zirigo-intro";
+    intro.setAttribute("aria-label", "ZIRIGO startup");
+    intro.innerHTML = '<div class="zirigo-intro-content"><img src="assets/zirigo-logo.png" alt="ZIRIGO" class="zirigo-intro-logo"><p class="zirigo-intro-wordmark">ZIRIGO</p><span class="zirigo-intro-line"></span><p class="zirigo-intro-tagline">STORIES THAT STAY WITH YOU</p></div>';
+    document.body.prepend(intro);
+
+    const audio = new Audio("https://audio.soundbreak.ai/96cddd5b64a88e49a79e5495cd93f599/872ed8273f2a4f6293beb553bb47b24e.mp3");
+    audio.preload = "auto";
+    audio.volume = 0.85;
 
     let finished = false;
     const finish = () => {
       if (finished) return;
       finished = true;
       intro.classList.add("is-leaving");
-      audio.pause();
-      window.setTimeout(() => {
-        intro.hidden = true;
-        document.body.classList.remove("zirigo-intro-active");
-      }, 650);
-      try { sessionStorage.setItem("zirigo-intro-seen", "1"); } catch (_) {}
+      const fadeStarted = performance.now();
+      const fadeAudio = () => {
+        const elapsed = performance.now() - fadeStarted;
+        audio.volume = Math.max(0, 0.85 * (1 - elapsed / 550));
+        if (elapsed < 550 && !audio.paused) requestAnimationFrame(fadeAudio);
+        else audio.pause();
+      };
+      fadeAudio();
+      window.setTimeout(() => intro.remove(), 650);
     };
 
-    try {
-      if (sessionStorage.getItem("zirigo-intro-seen") === "1") {
-        intro.hidden = true;
-        return;
-      }
-    } catch (_) {}
-
-    document.body.classList.add("zirigo-intro-active");
-    enter.addEventListener("click", async () => {
-      enter.disabled = true;
-      try {
-        audio.currentTime = 0;
-        await audio.play();
-      } catch (_) {
-        // If playback is unavailable, continue into the site without sound.
-      }
-      window.setTimeout(finish, 2600);
+    audio.play().then(() => {
+      window.setTimeout(finish, 2300);
+    }).catch(() => {
+      // Browser policy may block automatic launch audio; do not delay the app.
+      finish();
     });
-    skip.addEventListener("click", finish);
+    window.setTimeout(finish, 4500);
   })();
   </script>
 
