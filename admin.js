@@ -222,25 +222,36 @@
     return data.publicUrl;
   }
   
+  function formatBytes(bytes) {
+    if (!Number.isFinite(bytes) || bytes <= 0) return "0 MB";
+    const mb = bytes / (1024 * 1024);
+    return mb >= 10 ? mb.toFixed(1) + " MB" : mb.toFixed(2) + " MB";
+  }
+
+  function showTrailerProgress(visible) {
+    const panel = $("trailer-upload-progress");
+    if (panel) panel.hidden = !visible;
+  }
+
+  function updateTrailerProgress(loaded, total) {
+    const percent = total > 0 ? Math.min(100, Math.round((loaded / total) * 100)) : 0;
+    const bar = $("trailer-progress-bar");
+    const label = $("trailer-progress-label");
+    const details = $("trailer-progress-details");
+    if (bar) bar.value = percent;
+    if (label) label.textContent = "Uploading trailer: " + percent + "%";
+    if (details) details.textContent = formatBytes(loaded) + " uploaded · " +
+      formatBytes(Math.max(0, total - loaded)) + " remaining";
+  }
+
   async function uploadTrailer(file) {
     if (!file) return null;
-
-    const allowedTypes = [
-      "video/mp4",
-      "video/webm",
-      "video/quicktime"
-    ];
-
+    const allowedTypes = ["video/mp4", "video/webm", "video/quicktime"];
     if (!allowedTypes.includes(file.type)) {
-      throw new Error(
-        "Please choose an MP4, WebM or MOV video."
-      );
+      throw new Error("Please choose an MP4, WebM or MOV video.");
     }
-
     if (file.size > 50 * 1024 * 1024) {
-      throw new Error(
-        "The trailer must be 50 MB or smaller. Please compress it and try again."
-      );
+      throw new Error("The trailer must be 50 MB or smaller. Please compress it and try again.");
     }
 
     const extension = ({
@@ -248,26 +259,56 @@
       "video/webm": "webm",
       "video/quicktime": "mov"
     })[file.type];
+    const path = currentUser.id + "/" + crypto.randomUUID() + "." + extension;
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) throw sessionError;
+    const accessToken = sessionData.session?.access_token;
+    if (!accessToken) throw new Error("Your admin session has expired. Please sign in again.");
 
-    const path =
-      currentUser.id + "/" +
-      crypto.randomUUID() + "." + extension;
+    const encodedPath = path.split("/").map(encodeURIComponent).join("/");
+    const endpoint = config.url.replace(/\/$/, "") +
+      "/storage/v1/object/promotion-trailers/" + encodedPath;
 
-    const { error: uploadError } = await supabase
-      .storage
-      .from("promotion-trailers")
-      .upload(path, file, {
-        contentType: file.type,
-        upsert: false
+    showTrailerProgress(true);
+    updateTrailerProgress(0, file.size);
+
+    await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", endpoint);
+      xhr.setRequestHeader("apikey", config.publishableKey);
+      xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
+      xhr.setRequestHeader("Content-Type", file.type);
+      xhr.setRequestHeader("x-upsert", "false");
+      xhr.setRequestHeader("cache-control", "3600");
+      xhr.upload.addEventListener("progress", event => {
+        if (event.lengthComputable) updateTrailerProgress(event.loaded, event.total);
       });
+      xhr.addEventListener("load", () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          updateTrailerProgress(file.size, file.size);
+          resolve();
+          return;
+        }
+        let message = "Storage returned HTTP " + xhr.status + ".";
+        try {
+          const body = JSON.parse(xhr.responseText);
+          message = body.message || body.error || body.msg || message;
+        } catch {
+          if (xhr.responseText) message += " " + xhr.responseText.slice(0, 250);
+        }
+        reject(new Error("Trailer upload failed: " + message));
+      });
+      xhr.addEventListener("error", () =>
+        reject(new Error("Network error during trailer upload. Check your connection and try again.")));
+      xhr.addEventListener("timeout", () =>
+        reject(new Error("Trailer upload timed out. Check your connection and try again.")));
+      xhr.addEventListener("abort", () =>
+        reject(new Error("Trailer upload was cancelled.")));
+      xhr.timeout = 10 * 60 * 1000;
+      xhr.send(file);
+    });
 
-    if (uploadError) throw uploadError;
-
-    const { data } = supabase
-      .storage
-      .from("promotion-trailers")
-      .getPublicUrl(path);
-
+    const { data } = supabase.storage.from("promotion-trailers").getPublicUrl(path);
     return data.publicUrl;
   }
 
@@ -312,7 +353,13 @@
 
       if (trailerFile) {
         setStatus("Uploading trailer…");
-        uploadedTrailerUrl = await uploadTrailer(trailerFile);
+        try {
+          uploadedTrailerUrl = await uploadTrailer(trailerFile);
+          setStatus("Trailer uploaded successfully. Saving promotion details…");
+        } catch (uploadError) {
+          setStatus("Trailer upload failed: " + getErrorMessage(uploadError));
+          throw uploadError;
+        }
       }
 
       const record = {
@@ -356,10 +403,12 @@
       if (result.error) throw result.error;
 
       setStatus("Promotion saved successfully!");
+      showTrailerProgress(false);
       clearForm();
       await loadPromotions();
 
     } catch (error) {
+      showTrailerProgress(false);
       console.error("ZIRIGO admin save error:", error);
 
       setStatus(
