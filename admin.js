@@ -605,38 +605,70 @@
   }
 
   async function init() {
+    setStatus("Starting ZIRIGO Admin…");
+
     if (!window.supabase || !config?.url || !config?.publishableKey) {
+      setSignedInView(false);
       setStatus(
-        "Supabase configuration is missing. Check supabase-config.js."
+        "The admin connection could not start. Please refresh the page; if this continues, check the Supabase library and configuration."
       );
+      console.error("ZIRIGO admin startup:", {
+        supabaseLibraryLoaded: Boolean(window.supabase),
+        configLoaded: Boolean(config?.url && config?.publishableKey)
+      });
       return;
     }
 
-    supabase = window.supabase.createClient(
-      config.url,
-      config.publishableKey
-    );
+    try {
+      supabase = window.supabase.createClient(
+        config.url,
+        config.publishableKey,
+        {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true
+          }
+        }
+      );
 
-    loginForm.addEventListener("submit", signIn);
-    promotionForm.addEventListener("submit", savePromotion);
-    $("logout-button").addEventListener("click", signOut);
-    $("cancel-edit-button").addEventListener("click", clearForm);
+      loginForm.addEventListener("submit", signIn);
+      promotionForm.addEventListener("submit", savePromotion);
+      $("logout-button").addEventListener("click", signOut);
+      $("cancel-edit-button").addEventListener("click", clearForm);
 
-    const { data, error } = await supabase.auth.getSession();
+      // Show the login screen immediately instead of leaving visitors on
+      // "Connecting…" while a slow session request is pending.
+      setSignedInView(false);
+      setStatus("Checking your administrator session…");
 
-    if (error) {
-      setStatus("Could not check your session: " + getErrorMessage(error));
-      return;
+      supabase.auth.onAuthStateChange((_event, session) => {
+        setTimeout(() => {
+          checkAdmin(session?.user || null);
+        }, 0);
+      });
+
+      const sessionResult = await Promise.race([
+        supabase.auth.getSession(),
+        new Promise((_, reject) => {
+          setTimeout(() => reject(new Error(
+            "The connection is taking too long. You can still try signing in; please check your internet connection."
+          )), 10000);
+        })
+      ]);
+
+      if (sessionResult.error) {
+        setStatus("Could not check your session: " + getErrorMessage(sessionResult.error));
+        return;
+      }
+
+      await checkAdmin(sessionResult.data.session?.user || null);
+
+    } catch (error) {
+      console.error("ZIRIGO admin initialization error:", error);
+      setSignedInView(false);
+      setStatus("Admin connection issue: " + getErrorMessage(error));
     }
-
-    await checkAdmin(data.session?.user || null);
-
-    supabase.auth.onAuthStateChange((_event, session) => {
-      // Defer database work until after the auth callback completes.
-      setTimeout(() => {
-        checkAdmin(session?.user || null);
-      }, 0);
-    });
   }
 
   init();
