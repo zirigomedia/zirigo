@@ -313,6 +313,14 @@
       window.navigator.standalone === true;
     if (!standalone) return;
 
+    // Play only once per app session. Refreshing the page must not replay the intro.
+    try {
+      if (sessionStorage.getItem("zirigo-startup-played") === "yes") return;
+      sessionStorage.setItem("zirigo-startup-played", "yes");
+    } catch (error) {
+      // If session storage is unavailable, continue with the launch experience.
+    }
+
     const intro = document.createElement("section");
     intro.className = "zirigo-intro";
     intro.setAttribute("aria-label", "ZIRIGO startup");
@@ -342,12 +350,12 @@
     audio.play().then(() => {
       window.setTimeout(finish, 2300);
     }).catch(() => {
-      // Browser policy may block automatic launch audio; do not delay the app.
+      // If Android blocks autoplay, dismiss the splash and open the app normally.
       finish();
     });
     window.setTimeout(finish, 4500);
   })();
-  </script>
+  </script>t>
 
   <script src="app.js?v=5"></script>
         
