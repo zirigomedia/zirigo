@@ -244,6 +244,23 @@
       formatBytes(Math.max(0, total - loaded)) + " remaining";
   }
 
+  function loadTusClient() {
+    if (window.tus?.Upload) return Promise.resolve();
+    if (window.__zirigoTusLoading) return window.__zirigoTusLoading;
+    window.__zirigoTusLoading = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/tus-js-client@4/dist/tus.min.js";
+      script.async = true;
+      script.onload = () => window.tus?.Upload
+        ? resolve()
+        : reject(new Error("The resumable upload library did not initialize."));
+      script.onerror = () => reject(new Error("Could not load the resumable upload service. Check your connection and retry."));
+      document.head.appendChild(script);
+      setTimeout(() => reject(new Error("The resumable upload service is taking too long to load. Please retry.")), 15000);
+    }).finally(() => { window.__zirigoTusLoading = null; });
+    return window.__zirigoTusLoading;
+  }
+
   async function uploadTrailer(file) {
     if (!file) return null;
     const allowedTypes = ["video/mp4", "video/webm", "video/quicktime"];
@@ -253,8 +270,13 @@
     if (file.size > 50 * 1024 * 1024) {
       throw new Error("The trailer must be 50 MB or smaller. Please compress it and try again.");
     }
-    if (!window.tus?.Upload) {
-      throw new Error("The resumable upload service did not load. Refresh the page and try again.");
+    showTrailerProgress(true);
+    updateTrailerProgress(0, file.size);
+    try {
+      await loadTusClient();
+    } catch (error) {
+      showTrailerProgress(false);
+      throw error;
     }
 
     const extension = ({
@@ -268,8 +290,6 @@
     const accessToken = sessionData.session?.access_token;
     if (!accessToken) throw new Error("Your admin session has expired. Please sign in again.");
 
-    showTrailerProgress(true);
-    updateTrailerProgress(0, file.size);
     const endpoint = config.url.replace(/\\/$/, "") + "/storage/v1/upload/resumable";
 
     await new Promise((resolve, reject) => {
