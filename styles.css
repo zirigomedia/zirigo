@@ -1109,3 +1109,32 @@ html, body {
   transform: none !important;
   rotate: none !important;
 }
+
+
+/* Bright theme: improve footer and top navigation action contrast. */
+:root[data-theme="light"] footer {
+  background: #eae7df;
+  color: #403c34;
+}
+:root[data-theme="light"] footer p,
+:root[data-theme="light"] footer .footer-brand {
+  color: #29251e;
+}
+:root[data-theme="light"] footer a:last-child {
+  color: #805000;
+}
+:root[data-theme="light"] .topbar .subscribe {
+  color: #17130c !important;
+  background: transparent;
+  border: 1px solid #f6a91a;
+}
+:root[data-theme="light"] .topbar .settings-button {
+  color: #17130c;
+  background: transparent;
+  border: 1px solid #f6a91a;
+}
+:root[data-theme="light"] .topbar .subscribe:hover,
+:root[data-theme="light"] .topbar .settings-button:hover {
+  color: #17130c !important;
+  background: #f6a91a;
+}
