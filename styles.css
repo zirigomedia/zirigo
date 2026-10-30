@@ -1044,3 +1044,14 @@ animation: none;
 .settings-theme-note { display:block; margin-top:9px; color:#aaa69e; font-size:12px; }
 :root[data-theme="light"] .theme-choice { background:#f2efe8; color:#29251e; }
 :root[data-theme="light"] .theme-choice[aria-pressed="true"] { color:#8a5600; }
+
+/* Bright-theme contrast fixes: the billboard remains cinematic and readable. */
+:root[data-theme="light"] .featured-copy h2,
+:root[data-theme="light"] .featured-description,
+:root[data-theme="light"] .featured-note,
+:root[data-theme="light"] footer p {
+  color: #ffffff;
+}
+:root[data-theme="light"] .featured-copy h2 { text-shadow: 0 3px 20px #000, 0 1px 4px #000; }
+:root[data-theme="light"] .featured-description,
+:root[data-theme="light"] .featured-note { text-shadow: 0 2px 12px #000; }
