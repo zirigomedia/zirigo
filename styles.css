@@ -479,6 +479,11 @@
   }
   }
 
+/* The HTML hidden attribute must override the billboard's flex button styling. */
+.featured-actions .button[hidden] {
+  display: none !important;
+}
+
 /* =========================================
    ZIRIGO — PREMIUM BILLBOARD BUTTONS
    ========================================= */
