@@ -1,5 +1,6 @@
 from pathlib import Path
 from PIL import Image, ImageOps, ImageDraw
+import xml.etree.ElementTree as ET
 
 root = Path("android/app/src/main/res")
 source = Image.open("assets/zirigo-logo.png").convert("RGBA")
@@ -44,11 +45,19 @@ colors.mkdir(parents=True, exist_ok=True)
 
 # Keep Android WebView at normal text scale and allow device rotation.
 manifest = Path("android/app/src/main/AndroidManifest.xml")
-xml = manifest.read_text()
-# Android activity is allowed to follow device rotation.
-xml = xml.replace('<application', '<application android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round"', 1)
-xml = xml.replace('<activity', '<activity android:screenOrientation="sensor"', 1)
-manifest.write_text(xml)
+tree = ET.parse(manifest)
+root = tree.getroot()
+android_ns = "{http://schemas.android.com/apk/res/android}"
+application = root.find("application")
+if application is None:
+    raise RuntimeError("Android manifest has no application element")
+application.set(android_ns + "icon", "@mipmap/ic_launcher")
+application.set(android_ns + "roundIcon", "@mipmap/ic_launcher_round")
+activity = application.find("activity")
+if activity is None:
+    raise RuntimeError("Android manifest has no activity element")
+activity.set(android_ns + "screenOrientation", "sensor")
+tree.write(manifest, encoding="utf-8", xml_declaration=True)
 
 main = Path("android/app/src/main/java/com/zirigomedia/app/MainActivity.java")
 main.parent.mkdir(parents=True, exist_ok=True)
