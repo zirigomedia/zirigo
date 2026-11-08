@@ -51,13 +51,20 @@ xml = xml.replace('<activity', '<activity android:screenOrientation="sensor"', 1
 manifest.write_text(xml)
 
 main = Path("android/app/src/main/java/com/zirigomedia/app/MainActivity.java")
-if main.exists():
-    java = main.read_text()
-    if "setTextZoom(100)" not in java:
-        java = java.replace("super.onCreate(savedInstanceState);",
-            "super.onCreate(savedInstanceState);\n"
-            "        getBridge().getWebView().getSettings().setTextZoom(100);\n"
-            "        getBridge().getWebView().getSettings().setSupportZoom(false);\n"
-            "        getBridge().getWebView().getSettings().setBuiltInZoomControls(false);\n"
-            "        getBridge().getWebView().getSettings().setDisplayZoomControls(false);")
-        main.write_text(java)
+main.parent.mkdir(parents=True, exist_ok=True)
+main.write_text("""package com.zirigomedia.app;
+
+import android.os.Bundle;
+import com.getcapacitor.BridgeActivity;
+
+public class MainActivity extends BridgeActivity {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getBridge().getWebView().getSettings().setTextZoom(100);
+        getBridge().getWebView().getSettings().setSupportZoom(false);
+        getBridge().getWebView().getSettings().setBuiltInZoomControls(false);
+        getBridge().getWebView().getSettings().setDisplayZoomControls(false);
+    }
+}
+""")
