@@ -13,6 +13,7 @@ on:
       - "supabase-config.js"
       - "manifest.webmanifest"
       - "assets/**"
+      - "scripts/**"
       - ".github/workflows/build-android-apk.yml"
 
 permissions:
@@ -47,6 +48,11 @@ jobs:
 
       - name: Generate Android project
         run: npx cap add android
+
+      - name: Apply ZIRIGO Android branding and display fixes
+        run: |
+          python -m pip install Pillow
+          python scripts/android-setup.py
 
       - name: Sync ZIRIGO web app
         run: npx cap sync android
