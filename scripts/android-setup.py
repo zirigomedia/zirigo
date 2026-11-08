@@ -87,7 +87,7 @@ public class MainActivity extends BridgeActivity {
         webView.addJavascriptInterface(new ZirigoOrientation(), "ZirigoOrientation");
     }
 
-    private class ZirigoOrientation {
+    public class ZirigoOrientation {
         @JavascriptInterface
         public void lockLandscape() {
             runOnUiThread(() -> setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE));
