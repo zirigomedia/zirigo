@@ -312,6 +312,8 @@
   <!-- ZIRIGO APP STARTUP IDENT -->
   <script>
   (() => {
+    // This branded startup ident is for the native Android app only.
+    if (!window.ZirigoOrientation) return;
     const intro = document.createElement("section");
     intro.className = "zirigo-intro";
     intro.setAttribute("aria-label", "ZIRIGO startup");
