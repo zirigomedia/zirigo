@@ -202,6 +202,7 @@ document.addEventListener("keydown", event => {
 });  
 function enterLandscapeMode() {
   player.classList.add("native-landscape");
+  fullButton.textContent = "↙ Normal";
   if (window.ZirigoOrientation && typeof window.ZirigoOrientation.lockLandscape === "function") {
     window.ZirigoOrientation.lockLandscape();
   }
