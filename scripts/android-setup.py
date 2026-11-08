@@ -31,23 +31,23 @@ for density in sizes:
     fg.save(d / "ic_launcher_foreground.png")
 
 (folder / "ic_launcher.xml").write_text(
-    '<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\\n'
-    '  <background android:drawable="@color/zirigo_launcher_background"/>\\n'
-    '  <foreground android:drawable="@mipmap/ic_launcher_foreground"/>\\n'
-    '</adaptive-icon>\\n'
+    '<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n'
+    '  <background android:drawable="@color/zirigo_launcher_background"/>\n'
+    '  <foreground android:drawable="@mipmap/ic_launcher_foreground"/>\n'
+    '</adaptive-icon>\n'
 )
 colors = root / "values"
 colors.mkdir(parents=True, exist_ok=True)
 (colors / "zirigo_launcher_colors.xml").write_text(
-    '<resources><color name="zirigo_launcher_background">#080808</color></resources>\\n'
+    '<resources><color name="zirigo_launcher_background">#080808</color></resources>\n'
 )
 
 # Keep Android WebView at normal text scale and allow device rotation.
 manifest = Path("android/app/src/main/AndroidManifest.xml")
 xml = manifest.read_text()
-xml = xml.replace('android:allowBackup="true"', 'android:allowBackup="true"')
+# Android activity is allowed to follow device rotation.
 xml = xml.replace('<application', '<application android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round"', 1)
-xml = xml.replace('android:screenOrientation="portrait"', 'android:screenOrientation="sensor"')
+xml = xml.replace('<activity', '<activity android:screenOrientation="sensor"', 1)
 manifest.write_text(xml)
 
 main = Path("android/app/src/main/java/com/zirigomedia/app/MainActivity.java")
@@ -55,9 +55,9 @@ if main.exists():
     java = main.read_text()
     if "setTextZoom(100)" not in java:
         java = java.replace("super.onCreate(savedInstanceState);",
-            "super.onCreate(savedInstanceState);\\n"
-            "        getBridge().getWebView().getSettings().setTextZoom(100);\\n"
-            "        getBridge().getWebView().getSettings().setSupportZoom(false);\\n"
-            "        getBridge().getWebView().getSettings().setBuiltInZoomControls(false);\\n"
+            "super.onCreate(savedInstanceState);\n"
+            "        getBridge().getWebView().getSettings().setTextZoom(100);\n"
+            "        getBridge().getWebView().getSettings().setSupportZoom(false);\n"
+            "        getBridge().getWebView().getSettings().setBuiltInZoomControls(false);\n"
             "        getBridge().getWebView().getSettings().setDisplayZoomControls(false);")
         main.write_text(java)
