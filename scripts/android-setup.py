@@ -44,12 +44,12 @@ colors.mkdir(parents=True, exist_ok=True)
     '<resources><color name="zirigo_launcher_background">#080808</color></resources>\n'
 )
 
-# Keep Android WebView at normal text scale and allow device rotation.
+# Configure the WebView viewport, audio autoplay, and a real native orientation bridge.
 manifest = Path("android/app/src/main/AndroidManifest.xml")
 tree = ET.parse(manifest)
-root = tree.getroot()
+manifest_root = tree.getroot()
 android_ns = "{http://schemas.android.com/apk/res/android}"
-application = root.find("application")
+application = manifest_root.find("application")
 if application is None:
     raise RuntimeError("Android manifest has no application element")
 application.set(android_ns + "icon", "@mipmap/ic_launcher")
@@ -57,24 +57,46 @@ application.set(android_ns + "roundIcon", "@mipmap/ic_launcher_round")
 activity = application.find("activity")
 if activity is None:
     raise RuntimeError("Android manifest has no activity element")
-activity.set(android_ns + "screenOrientation", "sensor")
+activity.set(android_ns + "screenOrientation", "unspecified")
 tree.write(manifest, encoding="utf-8", xml_declaration=True)
 
 main = Path("android/app/src/main/java/com/zirigomedia/app/MainActivity.java")
 main.parent.mkdir(parents=True, exist_ok=True)
 main.write_text("""package com.zirigomedia.app;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getBridge().getWebView().getSettings().setTextZoom(100);
-        getBridge().getWebView().getSettings().setSupportZoom(false);
-        getBridge().getWebView().getSettings().setBuiltInZoomControls(false);
-        getBridge().getWebView().getSettings().setDisplayZoomControls(false);
+        WebView webView = getBridge().getWebView();
+        WebSettings settings = webView.getSettings();
+        settings.setTextZoom(100);
+        settings.setSupportZoom(false);
+        settings.setBuiltInZoomControls(false);
+        settings.setDisplayZoomControls(false);
+        settings.setUseWideViewPort(true);
+        settings.setLoadWithOverviewMode(false);
+        settings.setMediaPlaybackRequiresUserGesture(false);
+        webView.addJavascriptInterface(new ZirigoOrientation(), "ZirigoOrientation");
+    }
+
+    private class ZirigoOrientation {
+        @JavascriptInterface
+        public void lockLandscape() {
+            runOnUiThread(() -> setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE));
+        }
+
+        @JavascriptInterface
+        public void unlock() {
+            runOnUiThread(() -> setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED));
+        }
     }
 }
 """)
