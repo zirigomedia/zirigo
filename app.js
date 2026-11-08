@@ -181,6 +181,8 @@
   frame.style.display = "block";
 
   player.style.display = "none";
+  exitLandscapeMode();
+  fullButton.textContent = "⛶ Fullscreen";
   document.body.style.overflow = "";
 } 
 
@@ -198,51 +200,38 @@ document.addEventListener("keydown", event => {
     closePlayer();
   }
 });  
+function enterLandscapeMode() {
+  player.classList.add("native-landscape");
+  if (window.ZirigoOrientation && typeof window.ZirigoOrientation.lockLandscape === "function") {
+    window.ZirigoOrientation.lockLandscape();
+  }
+  try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock("landscape").catch(() => {}); } catch (_) {}
+}
+function exitLandscapeMode() {
+  player.classList.remove("native-landscape");
+  if (window.ZirigoOrientation && typeof window.ZirigoOrientation.unlock === "function") {
+    window.ZirigoOrientation.unlock();
+  }
+  try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (_) {}
+}
 fullButton.addEventListener("click", async () => {
+  if (player.classList.contains("native-landscape") || document.fullscreenElement) {
+    try { if (document.fullscreenElement && document.exitFullscreen) await document.exitFullscreen(); } catch (_) {}
+    exitLandscapeMode();
+    return;
+  }
+  enterLandscapeMode();
   try {
-    if (document.fullscreenElement) {
-      await document.exitFullscreen();
-      return;
-    }
-
-    if (player.requestFullscreen) {
-      await player.requestFullscreen();
-    } else if (player.webkitRequestFullscreen) {
-      player.webkitRequestFullscreen();
-    } else {
-      alert("Fullscreen isn't supported here. Please use the video player's fullscreen control.");
-      return;
-    }
-
-    // Request landscape only while the player is fullscreen; release it on exit.
-    try {
-      if (screen.orientation?.lock) await screen.orientation.lock("landscape");
-      // Capacitor Android WebView may need a native orientation request as well.
-      if (window.Capacitor?.isNativePlatform?.() && window.ZirigoOrientation?.lockLandscape) {
-        window.ZirigoOrientation.lockLandscape();
-      }
-    } catch (_) {
-      // Some browsers only allow orientation locking in installed/PWA contexts.
-    }
-
+    if (player.requestFullscreen) await player.requestFullscreen();
   } catch (_) {
-    alert("Fullscreen could not be opened. Try your browser's fullscreen control.");
+    // The native landscape layout remains active if WebView fullscreen is unavailable.
   }
 });
-
-
-// Restore normal orientation when leaving fullscreen
 document.addEventListener("fullscreenchange", () => {
-  const isFullscreen = !!document.fullscreenElement;
-  fullButton.textContent = isFullscreen ? "↙ Normal" : "⛶ Fullscreen";
-  if (!isFullscreen) {
-    try { screen.orientation?.unlock?.(); } catch (_) {}
-    if (window.Capacitor?.isNativePlatform?.() && window.ZirigoOrientation?.unlock) {
-      window.ZirigoOrientation.unlock();
-    }
-  }
+  const active = !!document.fullscreenElement;
+  fullButton.textContent = active || player.classList.contains("native-landscape") ? "↙ Normal" : "⛶ Fullscreen";
+  if (!active && !player.classList.contains("native-landscape")) exitLandscapeMode();
 });
-
   // Billboard elements.
   const backdrop = $("featured-backdrop");
   const titleEl = $("featured-title");
