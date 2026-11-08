@@ -1,0 +1,8 @@
+{
+  "appId": "com.zirigomedia.app",
+  "appName": "ZIRIGO",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
