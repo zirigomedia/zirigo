@@ -217,6 +217,10 @@ fullButton.addEventListener("click", async () => {
     // Request landscape only while the player is fullscreen; release it on exit.
     try {
       if (screen.orientation?.lock) await screen.orientation.lock("landscape");
+      // Capacitor Android WebView may need a native orientation request as well.
+      if (window.Capacitor?.isNativePlatform?.() && window.ZirigoOrientation?.lockLandscape) {
+        window.ZirigoOrientation.lockLandscape();
+      }
     } catch (_) {
       // Some browsers only allow orientation locking in installed/PWA contexts.
     }
@@ -233,6 +237,9 @@ document.addEventListener("fullscreenchange", () => {
   fullButton.textContent = isFullscreen ? "↙ Normal" : "⛶ Fullscreen";
   if (!isFullscreen) {
     try { screen.orientation?.unlock?.(); } catch (_) {}
+    if (window.Capacitor?.isNativePlatform?.() && window.ZirigoOrientation?.unlock) {
+      window.ZirigoOrientation.unlock();
+    }
   }
 });
 
