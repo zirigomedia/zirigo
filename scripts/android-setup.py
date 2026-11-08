@@ -1,6 +1,7 @@
 from pathlib import Path
 from PIL import Image, ImageOps, ImageDraw
 import xml.etree.ElementTree as ET
+ET.register_namespace("android", "http://schemas.android.com/apk/res/android")
 
 root = Path("android/app/src/main/res")
 source = Image.open("assets/zirigo-logo.png").convert("RGBA")
