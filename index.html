@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
       <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#080808">
     <meta name="description" content="ZIRIGO is a Nigerian film and digital content production and distribution company creating and delivering compelling stories for audiences across platforms.">
     <title>Stories That Stay With You</title>
@@ -307,57 +307,47 @@
   collection, analytics, advertising and storage practices.
 </p>
 
-   <script>
+
+
+  <!-- ZIRIGO APP STARTUP IDENT -->
+  <script>
   (() => {
-    const standalone = window.matchMedia("(display-mode: standalone)").matches ||
-      window.navigator.standalone === true;
-    if (!standalone) return;
-
-    // Play only once per app session. Refreshing the page must not replay the intro.
-    try {
-      if (sessionStorage.getItem("zirigo-startup-played") === "yes") return;
-      sessionStorage.setItem("zirigo-startup-played", "yes");
-    } catch (error) {
-      // If session storage is unavailable, continue with the launch experience.
-    }
-
+    const isAndroidApp = !!(window.ZirigoOrientation);
     const intro = document.createElement("section");
     intro.className = "zirigo-intro";
     intro.setAttribute("aria-label", "ZIRIGO startup");
     intro.innerHTML = '<div class="zirigo-intro-content"><img src="assets/zirigo-logo.png" alt="ZIRIGO" class="zirigo-intro-logo"><p class="zirigo-intro-wordmark">ZIRIGO</p><span class="zirigo-intro-line"></span><p class="zirigo-intro-tagline">STORIES THAT STAY WITH YOU</p></div>';
     document.body.prepend(intro);
+    document.body.classList.add("zirigo-intro-active");
 
     const audio = new Audio("https://audio.soundbreak.ai/96cddd5b64a88e49a79e5495cd93f599/872ed8273f2a4f6293beb553bb47b24e.mp3");
     audio.preload = "auto";
     audio.volume = 0.85;
-
     let finished = false;
     const finish = () => {
       if (finished) return;
       finished = true;
       intro.classList.add("is-leaving");
-      const fadeStarted = performance.now();
-      const fadeAudio = () => {
-        const elapsed = performance.now() - fadeStarted;
+      document.body.classList.remove("zirigo-intro-active");
+      const started = performance.now();
+      const fade = () => {
+        const elapsed = performance.now() - started;
         audio.volume = Math.max(0, 0.85 * (1 - elapsed / 550));
-        if (elapsed < 550 && !audio.paused) requestAnimationFrame(fadeAudio);
+        if (elapsed < 550 && !audio.paused) requestAnimationFrame(fade);
         else audio.pause();
       };
-      fadeAudio();
-      window.setTimeout(() => intro.remove(), 650);
+      fade();
+      window.setTimeout(() => intro.remove(), 700);
     };
-
-    audio.play().then(() => {
+    audio.play().then(() => window.setTimeout(finish, 2300)).catch(() => {
+      // If the device is offline or the sound host is unavailable, retain the visual intro.
       window.setTimeout(finish, 2300);
-    }).catch(() => {
-      // If Android blocks autoplay, dismiss the splash and open the app normally.
-      finish();
     });
-    window.setTimeout(finish, 4500);
+    window.setTimeout(finish, 5000);
   })();
-  </script>t>
+  </script>
 
-  <script src="app.js?v=5"></script>
+  <script src="app.js?v=6"></script>
         
   </section>
 </div>
