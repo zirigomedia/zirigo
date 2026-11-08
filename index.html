@@ -312,6 +312,46 @@
   <!-- ZIRIGO APP STARTUP IDENT -->
   <script>
   (() => {
+    const intro = document.createElement("section");
+    intro.className = "zirigo-intro";
+    intro.setAttribute("aria-label", "ZIRIGO startup");
+    intro.innerHTML = '<div class="zirigo-intro-content"><img src="assets/zirigo-logo.png" alt="ZIRIGO" class="zirigo-intro-logo"><p class="zirigo-intro-wordmark">ZIRIGO</p><span class="zirigo-intro-line"></span><p class="zirigo-intro-tagline">STORIES THAT STAY WITH YOU</p></div>';
+    document.body.prepend(intro);
+    document.body.classList.add("zirigo-intro-active");
+
+    const audio = new Audio("https://audio.soundbreak.ai/96cddd5b64a88e49a79e5495cd93f599/872ed8273f2a4f6293beb553bb47b24e.mp3");
+    audio.preload = "auto";
+    audio.volume = 0.85;
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      intro.classList.add("is-leaving");
+      document.body.classList.remove("zirigo-intro-active");
+      const started = performance.now();
+      const fade = () => {
+        const elapsed = performance.now() - started;
+        audio.volume = Math.max(0, 0.85 * (1 - elapsed / 550));
+        if (elapsed < 550 && !audio.paused) requestAnimationFrame(fade);
+        else audio.pause();
+      };
+      fade();
+      window.setTimeout(() => intro.remove(), 700);
+    };
+    audio.play().then(() => window.setTimeout(finish, 2300)).catch(() => {
+      // If the device is offline or the sound host is unavailable, retain the visual intro.
+      window.setTimeout(finish, 2300);
+    });
+    window.setTimeout(finish, 5000);
+  })();
+  </script>
+
+  </section>
+</div>
+
+  <!-- ZIRIGO APP STARTUP IDENT -->
+  <script>
+  (() => {
     const isAndroidApp = !!(window.ZirigoOrientation);
     const intro = document.createElement("section");
     intro.className = "zirigo-intro";
@@ -347,9 +387,6 @@
   })();
   </script>
 
-  <script src="app.js?v=6"></script>
-        
-  </section>
-</div>
+  <script src="app.js?v=7"></script>
 </body>
 </html>
