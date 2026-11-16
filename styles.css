@@ -1280,3 +1280,68 @@ html, body { width:100%; max-width:100%; overflow-x:hidden; }
   aspect-ratio:auto;
   box-shadow:none;
 }
+
+
+/* ZIRIGO Android app download — navigation and homepage callout */
+.topbar nav .nav-download {
+  color: #171006;
+  background: linear-gradient(135deg, #ffd76a 0%, #f6a91a 100%);
+  border: 1px solid #ffd76a;
+  border-radius: 5px;
+  padding: 10px 13px;
+  font-weight: 800;
+  box-shadow: 0 4px 16px #f6a91a20;
+}
+.topbar nav .nav-download:hover {
+  color: #171006;
+  background: #ffe39a;
+}
+.download-section {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 36px;
+  overflow: hidden;
+  border-top: 1px solid #f6a91a30;
+  border-bottom: 1px solid #f6a91a30;
+  background: radial-gradient(ellipse at 82% 50%, #f6a91a16 0%, transparent 42%), #100f0d;
+}
+.download-copy { position: relative; z-index: 1; max-width: 660px; }
+.download-copy h2 { max-width: 620px; line-height: 1.2; }
+.download-copy > p:not(.eyebrow):not(.download-note) {
+  max-width: 570px;
+  margin: 18px 0 24px;
+  color: #bdb7ac;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.download-app-button { margin-top: 2px; }
+.download-note { margin: 13px 0 0; color: #888176; font-size: 11px; }
+.download-mark {
+  flex: 0 0 min(26vw, 240px);
+  width: min(26vw, 240px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 1px solid #f6a91a35;
+  border-radius: 50%;
+  box-shadow: 0 0 70px #f6a91a0d, inset 0 0 55px #f6a91a0b;
+}
+.download-mark img { width: 72%; height: 72%; object-fit: contain; }
+:root[data-theme="light"] .download-section {
+  background: radial-gradient(ellipse at 82% 50%, #f6a91a1c 0%, transparent 42%), #fff;
+}
+:root[data-theme="light"] .download-copy > p:not(.eyebrow):not(.download-note) { color: #514c43; }
+:root[data-theme="light"] .download-note { color: #71695d; }
+:root[data-theme="light"] .topbar nav .nav-download { color: #171006 !important; }
+@media (max-width: 650px) {
+  .download-section { gap: 12px; }
+  .download-mark { flex-basis: 105px; width: 105px; }
+  .download-copy h2 { font-size: 25px; }
+  .download-copy > p:not(.eyebrow):not(.download-note) { font-size: 12px; }
+  .download-app-button { padding: 13px 12px; font-size: 10px; }
+}
+@media (max-width: 390px) {
+  .download-mark { display: none; }
+}
