@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 ET.register_namespace("android", "http://schemas.android.com/apk/res/android")
 
 root = Path("android/app/src/main/res")
-source = Image.open("assets/zirigo-logo.png").convert("RGBA")
+source = Image.open("assets/icon-512.png").convert("RGBA")
 
 # Generate correctly sized launcher icons for every Android density.
 sizes = {"mdpi":48,"hdpi":72,"xhdpi":96,"xxhdpi":144,"xxxhdpi":192}
