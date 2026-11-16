@@ -17,7 +17,7 @@ on:
       - ".github/workflows/build-android-apk.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -61,6 +61,19 @@ jobs:
         run: |
           cd android
           ./gradlew assembleDebug
+
+      - name: Publish latest ZIRIGO APK download
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          APK_PATH="android/app/build/outputs/apk/debug/app-debug.apk"
+          if gh release view android-latest >/dev/null 2>&1; then
+            gh release upload android-latest "$APK_PATH#ZIRIGO.apk" --clobber
+          else
+            gh release create android-latest "$APK_PATH#ZIRIGO.apk" \
+              --title "ZIRIGO Android App" \
+              --notes "Latest installable ZIRIGO Android app. Download ZIRIGO.apk and install it on your Android device."
+          fi
 
       - name: Upload ZIRIGO APK
         uses: actions/upload-artifact@v4
