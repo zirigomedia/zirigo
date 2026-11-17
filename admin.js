@@ -23,6 +23,7 @@
   let editingTrailerUrl = null;
   let posterToDelete = null;
   let busy = false;
+  let recoveryMode = false;
 
   function setStatus(message) {
     statusEl.textContent = message;
@@ -55,6 +56,7 @@
   }
 
   function showPasswordRecoveryView() {
+    recoveryMode = true;
     loginPanel.hidden = true;
     dashboard.hidden = true;
     forgotPasswordPanel.hidden = true;
@@ -661,6 +663,7 @@
   }
 
   async function checkAdmin(user) {
+    if (recoveryMode) return;
     if (!user) {
       currentUser = null;
       setSignedInView(false);
@@ -731,6 +734,7 @@
         setStatus("Enter your administrator email to receive a secure reset link.");
       });
       $("back-to-login-button").addEventListener("click", () => {
+        recoveryMode = false;
         showLoginView();
         setStatus("Sign in with your ZIRIGO administrator account.");
       });
@@ -751,6 +755,7 @@
             return;
           }
           if (event === "SIGNED_OUT") {
+            recoveryMode = false;
             showLoginView();
           }
           checkAdmin(session?.user || null);
