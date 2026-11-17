@@ -12,7 +12,7 @@ for density, size in sizes.items():
     folder = root / f"mipmap-{density}"
     folder.mkdir(parents=True, exist_ok=True)
     canvas = Image.new("RGBA", (size, size), (8,8,8,255))
-    logo = ImageOps.contain(source, (int(size*.78), int(size*.78)))
+    logo = ImageOps.contain(source, (int(size*.96), int(size*.96)))
     canvas.alpha_composite(logo, ((size-logo.width)//2, (size-logo.height)//2))
     canvas.save(folder / "ic_launcher.png")
     canvas.save(folder / "ic_launcher_round.png")
@@ -21,7 +21,7 @@ for density, size in sizes.items():
 folder = root / "mipmap-anydpi-v26"
 folder.mkdir(parents=True, exist_ok=True)
 foreground = Image.new("RGBA", (432,432), (0,0,0,0))
-logo = ImageOps.contain(source, (300,300))
+logo = ImageOps.contain(source, (396,396))
 foreground.alpha_composite(logo, ((432-logo.width)//2, (432-logo.height)//2))
 foreground.save(root / "mipmap-xxxhdpi" / "ic_launcher_foreground.png")
 # Also store the foreground in the resource root so all density variants resolve.
@@ -44,7 +44,38 @@ colors.mkdir(parents=True, exist_ok=True)
     '<resources><color name="zirigo_launcher_background">#080808</color></resources>\n'
 )
 
-# Configure the WebView viewport, audio autoplay, and a real native orientation bridge.
+
+# Native Android launch screen: show the ZIRIGO mark immediately, before the WebView.
+drawable = root / "drawable-nodpi"
+drawable.mkdir(parents=True, exist_ok=True)
+splash_logo = source.copy()
+splash_logo.thumbnail((512, 512), Image.Resampling.LANCZOS)
+splash_logo.save(drawable / "zirigo_splash_logo.png")
+
+values = root / "values"
+values.mkdir(parents=True, exist_ok=True)
+(values / "zirigo_splash_colors.xml").write_text(
+    '<resources><color name="zirigo_splash_background">#080808</color></resources>\\n'
+)
+(values / "styles.xml").write_text(
+    '<resources>\\n'
+    '  <style name="AppTheme.Splash" parent="AppTheme.NoActionBar">\\n'
+    '    <item name="android:windowBackground">@color/zirigo_splash_background</item>\\n'
+    '  </style>\\n'
+    '</resources>\\n'
+)
+values_v31 = root / "values-v31"
+values_v31.mkdir(parents=True, exist_ok=True)
+(values_v31 / "styles.xml").write_text(
+    '<resources>\\n'
+    '  <style name="AppTheme.Splash" parent="AppTheme.NoActionBar">\\n'
+    '    <item name="android:windowSplashScreenBackground">#080808</item>\\n'
+    '    <item name="android:windowSplashScreenAnimatedIcon">@drawable/zirigo_splash_logo</item>\\n'
+    '    <item name="android:windowSplashScreenAnimationDuration">500</item>\\n'
+    '  </style>\\n'
+    '</resources>\\n'
+)
+\n# Configure the WebView viewport, audio autoplay, and a real native orientation bridge.
 manifest = Path("android/app/src/main/AndroidManifest.xml")
 tree = ET.parse(manifest)
 manifest_root = tree.getroot()
@@ -57,7 +88,7 @@ application.set(android_ns + "roundIcon", "@mipmap/ic_launcher_round")
 activity = application.find("activity")
 if activity is None:
     raise RuntimeError("Android manifest has no activity element")
-activity.set(android_ns + "screenOrientation", "unspecified")
+activity.set(android_ns + "screenOrientation", "unspecified")\nactivity.set(android_ns + "theme", "@style/AppTheme.Splash")
 tree.write(manifest, encoding="utf-8", xml_declaration=True)
 
 main = Path("android/app/src/main/java/com/zirigomedia/app/MainActivity.java")
