@@ -303,6 +303,23 @@
     </section>
 
     <section id="dashboard" hidden>
+      <section class="admin-panel">
+        <h2>Administrator account</h2>
+        <p style="color:#aaa69e;line-height:1.7">
+          Signed-in email: <strong id="current-admin-email" style="color:#ffd15c"></strong>
+        </p>
+        <form id="change-email-form" class="admin-form">
+          <label>
+            New administrator email
+            <input id="new-admin-email" type="email" autocomplete="email" required>
+          </label>
+          <button class="admin-button" type="submit" id="change-email-button">Change email address</button>
+        </form>
+        <p style="color:#aaa69e;font-size:12px;line-height:1.6">
+          Supabase will send a confirmation email. Your admin account and UID will remain the same.
+        </p>
+      </section>
+
       <div class="admin-panel">
         <div class="admin-actions" style="justify-content:space-between">
           <h2>Promotions</h2>
