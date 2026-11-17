@@ -58,12 +58,14 @@ values.mkdir(parents=True, exist_ok=True)
   <color name="zirigo_splash_background">#080808</color>
 </resources>
 """)
-(values / "styles.xml").write_text("""<resources>
-  <style name="AppTheme.Splash" parent="AppTheme.NoActionBar">
-    <item name="android:windowBackground">@color/zirigo_splash_background</item>
-  </style>
-</resources>
-""")
+styles_path = values / "styles.xml"
+styles_tree = ET.parse(styles_path)
+styles_root = styles_tree.getroot()
+splash_style = styles_root.find("style[@name='AppTheme.Splash']")
+if splash_style is None:
+    splash_style = ET.SubElement(styles_root, "style", {"name": "AppTheme.Splash", "parent": "AppTheme.NoActionBar"})
+ET.SubElement(splash_style, "item", {"name": "android:windowBackground"}).text = "@color/zirigo_splash_background"
+styles_tree.write(styles_path, encoding="utf-8", xml_declaration=True)
 values_v31 = root / "values-v31"
 values_v31.mkdir(parents=True, exist_ok=True)
 (values_v31 / "styles.xml").write_text("""<resources>
