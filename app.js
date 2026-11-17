@@ -727,4 +727,40 @@ if (privacyOverlay?.classList.contains("is-open")) {
 }
 
 });
+
+// Share ZIRIGO with friends using the device's native share sheet when available.
+const shareButton = $("zirigo-share-button");
+const shareFeedback = $("zirigo-share-feedback");
+
+shareButton?.addEventListener("click", async () => {
+  const shareUrl = window.location.origin + window.location.pathname;
+  const shareData = {
+    title: "ZIRIGO — Stories That Stay With You",
+    text: "Discover original African stories, films and shorts from ZIRIGO Media.",
+    url: shareUrl
+  };
+
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+      if (shareFeedback) shareFeedback.textContent = "Thanks for sharing ZIRIGO!";
+    } catch (error) {
+      if (error?.name !== "AbortError" && shareFeedback) {
+        shareFeedback.textContent = "Sharing wasn't available. Please try copying the site link.";
+      }
+    }
+    return;
+  }
+
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(shareUrl);
+      if (shareFeedback) shareFeedback.textContent = "Website link copied! Send it to your friends.";
+    } else {
+      window.prompt("Copy the ZIRIGO website link:", shareUrl);
+    }
+  } catch (_) {
+    window.prompt("Copy the ZIRIGO website link:", shareUrl);
+  }
+});
 })();
