@@ -19,24 +19,22 @@ def trim_transparent(image):
 
 source = trim_transparent(source)
 
-# Generate launcher icons with a white field and generous safe margins.
-# Keep the full supplied logo visible inside Android's circular/squircle masks.
+# Generate transparent launcher icons with generous breathing room around the ZIRIGO mark.
 sizes = {"mdpi":48,"hdpi":72,"xhdpi":96,"xxhdpi":144,"xxxhdpi":192}
 for density, size in sizes.items():
     folder = root / f"mipmap-{density}"
     folder.mkdir(parents=True, exist_ok=True)
-    canvas = Image.new("RGBA", (size, size), (255,255,255,255))
-    logo = ImageOps.contain(source, (int(size*.86), int(size*.72)), method=Image.Resampling.LANCZOS)
+    canvas = Image.new("RGBA", (size, size), (0,0,0,0))
+    logo = ImageOps.contain(source, (int(size*.68), int(size*.58)), method=Image.Resampling.LANCZOS)
     canvas.alpha_composite(logo, ((size-logo.width)//2, (size-logo.height)//2))
     canvas.save(folder / "ic_launcher.png")
     canvas.save(folder / "ic_launcher_round.png")
 
-# Adaptive launcher icon for Android 8+: white background, logo kept
-# within the central safe zone so launcher masks cannot cut off its edges.
+# Adaptive launcher icon for Android 8+: transparent background and a centered mark within the safe zone.
 folder = root / "mipmap-anydpi-v26"
 folder.mkdir(parents=True, exist_ok=True)
 foreground = Image.new("RGBA", (432,432), (0,0,0,0))
-logo = ImageOps.contain(source, (340,340), method=Image.Resampling.LANCZOS)
+logo = ImageOps.contain(source, (250,250), method=Image.Resampling.LANCZOS)
 foreground.alpha_composite(logo, ((432-logo.width)//2, (432-logo.height)//2))
 foreground.save(root / "mipmap-xxxhdpi" / "ic_launcher_foreground.png")
 for density in sizes:
@@ -56,7 +54,7 @@ colors = root / "values"
 colors.mkdir(parents=True, exist_ok=True)
 (colors / "zirigo_launcher_colors.xml").write_text(
     """<resources>
-  <color name="zirigo_launcher_background">#FFFFFF</color>
+  <color name="zirigo_launcher_background">#00000000</color>
 </resources>
 """
 )
