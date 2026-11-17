@@ -4,14 +4,15 @@ import xml.etree.ElementTree as ET
 ET.register_namespace("android", "http://schemas.android.com/apk/res/android")
 
 root = Path("android/app/src/main/res")
-source = Image.open("assets/icon-512.png").convert("RGBA")
+icon_source_path = Path("assets/zirigo-logo.png")
+source = Image.open(icon_source_path if icon_source_path.exists() else "assets/icon-512.png").convert("RGBA")
 
 # Generate correctly sized launcher icons for every Android density.
 sizes = {"mdpi":48,"hdpi":72,"xhdpi":96,"xxhdpi":144,"xxxhdpi":192}
 for density, size in sizes.items():
     folder = root / f"mipmap-{density}"
     folder.mkdir(parents=True, exist_ok=True)
-    canvas = Image.new("RGBA", (size, size), (8,8,8,255))
+    canvas = Image.new("RGBA", (size, size), (255,255,255,255))
     logo = ImageOps.contain(source, (int(size*.96), int(size*.96)))
     canvas.alpha_composite(logo, ((size-logo.width)//2, (size-logo.height)//2))
     canvas.save(folder / "ic_launcher.png")
@@ -41,7 +42,7 @@ for density in sizes:
 colors = root / "values"
 colors.mkdir(parents=True, exist_ok=True)
 (colors / "zirigo_launcher_colors.xml").write_text(
-    '<resources><color name="zirigo_launcher_background">#080808</color></resources>\n'
+    '<resources><color name="zirigo_launcher_background">#FFFFFF</color></resources>\n'
 )
 
 
