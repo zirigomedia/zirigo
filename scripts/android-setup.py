@@ -45,12 +45,17 @@ colors.mkdir(parents=True, exist_ok=True)
 )
 
 
-# Native Android launch screen: show the ZIRIGO mark immediately, before the WebView.
+# Native Android launch screen: use the supplied ZIRIGO logo with safe padding.
+# Android 12 applies a system mask to splash artwork, so keep the mark inside
+# the central safe area to prevent the edges from being clipped.
 drawable = root / "drawable-nodpi"
 drawable.mkdir(parents=True, exist_ok=True)
-splash_logo = source.copy()
-splash_logo.thumbnail((512, 512), Image.Resampling.LANCZOS)
-splash_logo.save(drawable / "zirigo_splash_logo.png")
+splash_source_path = Path("assets/zirigo-logo.png")
+splash_source = Image.open(splash_source_path).convert("RGBA") if splash_source_path.exists() else source.copy()
+splash_canvas = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
+splash_mark = ImageOps.contain(splash_source, (320, 320), method=Image.Resampling.LANCZOS)
+splash_canvas.alpha_composite(splash_mark, ((512 - splash_mark.width) // 2, (512 - splash_mark.height) // 2))
+splash_canvas.save(drawable / "zirigo_splash_logo.png")
 
 values = root / "values"
 values.mkdir(parents=True, exist_ok=True)
