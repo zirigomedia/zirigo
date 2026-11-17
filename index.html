@@ -334,49 +334,33 @@
 
 
 
-  <!-- Single native-app startup ident -->
+  <!-- Native Android displays the ZIRIGO logo before the WebView. Play the ident sound once the app content is ready. -->
   <script>
   (() => {
     const isNative = !!(window.ZirigoOrientation) ||
       !!(window.Capacitor && typeof window.Capacitor.isNativePlatform === "function" && window.Capacitor.isNativePlatform());
     if (!isNative) return;
-
-    const showIntro = () => {
-      if (document.querySelector(".zirigo-intro")) return;
-      const intro = document.createElement("section");
-      intro.className = "zirigo-intro";
-      intro.setAttribute("aria-label", "ZIRIGO startup");
-      intro.innerHTML = '<div class="zirigo-intro-content"><img src="assets/zirigo-logo.png" alt="ZIRIGO" class="zirigo-intro-logo"></div>';
-      document.body.prepend(intro);
-      document.body.classList.add("zirigo-intro-active");
-
+    const playIdent = () => {
+      if (window.__zirigoIdentPlayed) return;
+      window.__zirigoIdentPlayed = true;
       const audio = new Audio("https://audio.soundbreak.ai/96cddd5b64a88e49a79e5495cd93f599/872ed8273f2a4f6293beb553bb47b24e.mp3");
       audio.preload = "auto";
-      audio.volume = 0.85;
-      let finished = false;
-      const finish = () => {
-        if (finished) return;
-        finished = true;
-        intro.classList.add("is-leaving");
-        document.body.classList.remove("zirigo-intro-active");
+      audio.volume = 0.82;
+      audio.play().then(() => {
         const started = performance.now();
         const fade = () => {
           const elapsed = performance.now() - started;
-          audio.volume = Math.max(0, 0.85 * (1 - elapsed / 550));
-          if (elapsed < 550 && !audio.paused) requestAnimationFrame(fade);
+          audio.volume = Math.max(0, 0.82 * (1 - elapsed / 2400));
+          if (elapsed < 2400 && !audio.paused) requestAnimationFrame(fade);
           else audio.pause();
         };
         fade();
-        window.setTimeout(() => intro.remove(), 700);
-      };
-      audio.play().then(() => window.setTimeout(finish, 2300)).catch(() => window.setTimeout(finish, 2300));
-      window.setTimeout(finish, 5000);
+      }).catch(() => {});
     };
-
     if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", showIntro, { once: true });
+      document.addEventListener("DOMContentLoaded", playIdent, { once: true });
     } else {
-      showIntro();
+      playIdent();
     }
   })();
   </script>
