@@ -90,7 +90,8 @@ application.set(android_ns + "roundIcon", "@mipmap/ic_launcher_round")
 activity = application.find("activity")
 if activity is None:
     raise RuntimeError("Android manifest has no activity element")
-activity.set(android_ns + "screenOrientation", "unspecified")\nactivity.set(android_ns + "theme", "@style/AppTheme.Splash")
+activity.set(android_ns + "screenOrientation", "unspecified")
+activity.set(android_ns + "theme", "@style/AppTheme.Splash")
 tree.write(manifest, encoding="utf-8", xml_declaration=True)
 
 main = Path("android/app/src/main/java/com/zirigomedia/app/MainActivity.java")
