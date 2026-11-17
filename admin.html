@@ -154,6 +154,42 @@
       margin-bottom: 12px;
     }
 
+    .password-field {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .password-field input {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .password-toggle {
+      flex: 0 0 auto;
+      min-width: 64px;
+      padding: 0 12px;
+      border: 1px solid #665022;
+      border-radius: 5px;
+      background: #211b10;
+      color: #ffd15c;
+      font: inherit;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .text-button {
+      justify-self: start;
+      padding: 4px 0;
+      border: 0;
+      background: transparent;
+      color: #ffd15c;
+      font: inherit;
+      font-size: 13px;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
     [hidden] {
       display: none !important;
     }
@@ -213,17 +249,56 @@
 
         <label>
           Password
-          <input
-            id="login-password"
-            type="password"
-            autocomplete="current-password"
-            required
-          >
+          <div class="password-field">
+            <input
+              id="login-password"
+              type="password"
+              autocomplete="current-password"
+              required
+            >
+            <button class="password-toggle" type="button" data-password-toggle="login-password" aria-label="Show password" aria-pressed="false">Show</button>
+          </div>
         </label>
 
         <button class="admin-button" type="submit">
           Sign in
         </button>
+        <button id="forgot-password-button" class="text-button" type="button">Forgot password?</button>
+      </form>
+    </section>
+
+    <section id="forgot-password-panel" class="admin-panel" hidden>
+      <h2>Reset your password</h2>
+      <p style="color:#aaa69e;line-height:1.7">Enter your ZIRIGO administrator email address. We'll send you a secure password-reset link.</p>
+      <form id="forgot-password-form" class="admin-form">
+        <label>
+          Email address
+          <input id="reset-email" type="email" autocomplete="email" required>
+        </label>
+        <button class="admin-button" type="submit" id="send-reset-button">Send reset link</button>
+        <button id="back-to-login-button" class="text-button" type="button">Back to sign in</button>
+      </form>
+    </section>
+
+    <section id="update-password-panel" class="admin-panel" hidden>
+      <h2>Choose a new password</h2>
+      <p style="color:#aaa69e;line-height:1.7">Create a new password for your ZIRIGO administrator account.</p>
+      <form id="update-password-form" class="admin-form">
+        <label>
+          New password
+          <div class="password-field">
+            <input id="new-password" type="password" autocomplete="new-password" minlength="8" required>
+            <button class="password-toggle" type="button" data-password-toggle="new-password" aria-label="Show password" aria-pressed="false">Show</button>
+          </div>
+        </label>
+        <label>
+          Confirm new password
+          <div class="password-field">
+            <input id="confirm-password" type="password" autocomplete="new-password" minlength="8" required>
+            <button class="password-toggle" type="button" data-password-toggle="confirm-password" aria-label="Show password" aria-pressed="false">Show</button>
+          </div>
+        </label>
+        <button class="admin-button" type="submit" id="update-password-button">Update password</button>
       </form>
     </section>
 
@@ -367,6 +442,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
-  <script src="admin.js?v=7"></script>
+  <script src="admin.js?v=8"></script>
 </body>
       </html>
