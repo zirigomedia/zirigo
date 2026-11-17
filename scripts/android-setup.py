@@ -30,35 +30,21 @@ for density, size in sizes.items():
     canvas.save(folder / "ic_launcher.png")
     canvas.save(folder / "ic_launcher_round.png")
 
-# Adaptive launcher icon for Android 8+: transparent background and a centered mark within the safe zone.
-folder = root / "mipmap-anydpi-v26"
-folder.mkdir(parents=True, exist_ok=True)
-foreground = Image.new("RGBA", (432,432), (0,0,0,0))
-logo = ImageOps.contain(source, (250,250), method=Image.Resampling.LANCZOS)
-foreground.alpha_composite(logo, ((432-logo.width)//2, (432-logo.height)//2))
-foreground.save(root / "mipmap-xxxhdpi" / "ic_launcher_foreground.png")
+# Use the density-specific PNG launcher artwork directly.
+# Android's adaptive-icon background layer is composited by some launchers as black
+# when transparent. A legacy RGBA PNG lets the transparent pixels stay transparent,
+# like PixelLab's mark-only icon. Do not generate an adaptive-icon XML/background.
+adaptive_dir = root / "mipmap-anydpi-v26"
+adaptive_xml = adaptive_dir / "ic_launcher.xml"
+if adaptive_xml.exists():
+    adaptive_xml.unlink()
+launcher_colors = root / "values" / "zirigo_launcher_colors.xml"
+if launcher_colors.exists():
+    launcher_colors.unlink()
 for density in sizes:
-    d = root / f"mipmap-{density}"
-    d.mkdir(parents=True, exist_ok=True)
-    fg = Image.new("RGBA", (432,432), (0,0,0,0))
-    fg.alpha_composite(logo, ((432-logo.width)//2, (432-logo.height)//2))
-    fg.save(d / "ic_launcher_foreground.png")
-
-(folder / "ic_launcher.xml").write_text(
-    '<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\\n'
-    '  <background android:drawable="@color/zirigo_launcher_background"/>\\n'
-    '  <foreground android:drawable="@mipmap/ic_launcher_foreground"/>\\n'
-    '</adaptive-icon>\\n'
-)
-colors = root / "values"
-colors.mkdir(parents=True, exist_ok=True)
-(colors / "zirigo_launcher_colors.xml").write_text(
-    """<resources>
-  <color name="zirigo_launcher_background">#00000000</color>
-</resources>
-"""
-)
-
+    foreground_file = root / f"mipmap-{density}" / "ic_launcher_foreground.png"
+    if foreground_file.exists():
+        foreground_file.unlink()
 
 # Native Android launch screen: use the supplied ZIRIGO logo with safe padding.
 # Android 12 applies a system mask to splash artwork, so keep the mark inside
