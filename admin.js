@@ -23,7 +23,11 @@
   let editingTrailerUrl = null;
   let posterToDelete = null;
   let busy = false;
-  let recoveryMode = false;
+  // A recovery link carries this marker through the email redirect. Set this
+  // before reading any persisted session so an old session cannot open the dashboard.
+  const recoveryRequested = new URLSearchParams(window.location.search).get("flow") === "recovery" ||
+    new URLSearchParams(window.location.hash.slice(1)).get("type") === "recovery";
+  let recoveryMode = recoveryRequested;
 
   function setStatus(message) {
     statusEl.textContent = message;
@@ -88,7 +92,7 @@
     try {
       const email = $("reset-email").value.trim();
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + window.location.pathname
+        redirectTo: window.location.origin + window.location.pathname + "?flow=recovery"
       });
       if (error) throw error;
       setStatus("If an administrator account exists for that email, a password-reset link has been sent. Please check your inbox and spam folder.");
@@ -784,7 +788,7 @@
 
       supabase.auth.onAuthStateChange((event, session) => {
         setTimeout(() => {
-          if (event === "PASSWORD_RECOVERY") {
+          if (event === "PASSWORD_RECOVERY" || (recoveryMode && session?.user)) {
             showPasswordRecoveryView();
             return;
           }
@@ -807,6 +811,16 @@
 
       if (sessionResult.error) {
         setStatus("Could not check your session: " + getErrorMessage(sessionResult.error));
+        return;
+      }
+
+      if (recoveryMode) {
+        if (sessionResult.data.session?.user) {
+          showPasswordRecoveryView();
+        } else {
+          showLoginView();
+          setStatus("The recovery link has not been verified yet. Reopen the latest password-reset email link.");
+        }
         return;
       }
 
