@@ -629,6 +629,33 @@
     }
   }
 
+  async function changeAdminEmail(event) {
+    event.preventDefault();
+    const input = $("new-admin-email");
+    const button = $("change-email-button");
+    const newEmail = input.value.trim().toLowerCase();
+
+    if (!newEmail || !currentUser) return;
+    if (newEmail === (currentUser.email || "").toLowerCase()) {
+      setStatus("That is already the email address on this account.");
+      return;
+    }
+
+    button.disabled = true;
+    setStatus("Requesting your email change…");
+
+    try {
+      const { error } = await supabase.auth.updateUser({ email: newEmail });
+      if (error) throw error;
+      input.value = "";
+      setStatus("Email change requested. Check " + newEmail + " for Supabase's confirmation email. Your current admin session and UID have not been replaced.");
+    } catch (error) {
+      setStatus("Could not request email change: " + getErrorMessage(error));
+    } finally {
+      button.disabled = false;
+    }
+  }
+
   async function signIn(event) {
     event.preventDefault();
 
@@ -690,6 +717,7 @@
 
     currentUser = user;
     setSignedInView(true);
+    $("current-admin-email").textContent = user.email || "";
     setStatus("Signed in as " + user.email);
 
     await loadPromotions();
@@ -724,6 +752,7 @@
       );
 
       loginForm.addEventListener("submit", signIn);
+      $("change-email-form").addEventListener("submit", changeAdminEmail);
       forgotPasswordForm.addEventListener("submit", requestPasswordReset);
       updatePasswordForm.addEventListener("submit", updateRecoveredPassword);
       $("forgot-password-button").addEventListener("click", () => {
