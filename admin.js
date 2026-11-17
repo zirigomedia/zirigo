@@ -7,6 +7,10 @@
   const loginForm = document.getElementById("login-form");
   const promotionForm = document.getElementById("promotion-form");
   const promotionList = document.getElementById("promotion-list");
+  const forgotPasswordPanel = document.getElementById("forgot-password-panel");
+  const updatePasswordPanel = document.getElementById("update-password-panel");
+  const forgotPasswordForm = document.getElementById("forgot-password-form");
+  const updatePasswordForm = document.getElementById("update-password-form");
 
   const $ = id => document.getElementById(id);
 
@@ -37,6 +41,90 @@
   function setSignedInView(signedIn) {
     loginPanel.hidden = signedIn;
     dashboard.hidden = !signedIn;
+    if (signedIn) {
+      forgotPasswordPanel.hidden = true;
+      updatePasswordPanel.hidden = true;
+    }
+  }
+
+  function showLoginView() {
+    loginPanel.hidden = false;
+    dashboard.hidden = true;
+    forgotPasswordPanel.hidden = true;
+    updatePasswordPanel.hidden = true;
+  }
+
+  function showPasswordRecoveryView() {
+    loginPanel.hidden = true;
+    dashboard.hidden = true;
+    forgotPasswordPanel.hidden = true;
+    updatePasswordPanel.hidden = false;
+    $("new-password").value = "";
+    $("confirm-password").value = "";
+    setStatus("Password reset link verified. Choose a new password.");
+  }
+
+  function setupPasswordVisibility() {
+    document.querySelectorAll("[data-password-toggle]").forEach(button => {
+      button.addEventListener("click", () => {
+        const input = document.getElementById(button.dataset.passwordToggle);
+        if (!input) return;
+        const reveal = input.type === "password";
+        input.type = reveal ? "text" : "password";
+        button.textContent = reveal ? "Hide" : "Show";
+        button.setAttribute("aria-label", reveal ? "Hide password" : "Show password");
+        button.setAttribute("aria-pressed", String(reveal));
+      });
+    });
+  }
+
+  async function requestPasswordReset(event) {
+    event.preventDefault();
+    const button = $("send-reset-button");
+    button.disabled = true;
+    setStatus("Sending password-reset email…");
+    try {
+      const email = $("reset-email").value.trim();
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + window.location.pathname
+      });
+      if (error) throw error;
+      setStatus("If an administrator account exists for that email, a password-reset link has been sent. Please check your inbox and spam folder.");
+    } catch (error) {
+      setStatus("Could not send reset email: " + getErrorMessage(error));
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  async function updateRecoveredPassword(event) {
+    event.preventDefault();
+    const password = $("new-password").value;
+    const confirmation = $("confirm-password").value;
+    if (password.length < 8) {
+      setStatus("Please use a password with at least 8 characters.");
+      return;
+    }
+    if (password !== confirmation) {
+      setStatus("The two passwords do not match. Please check them.");
+      return;
+    }
+    const button = $("update-password-button");
+    button.disabled = true;
+    setStatus("Updating your password…");
+    try {
+      const { error } = await supabase.auth.updateUser({ password });
+      if (error) throw error;
+      $("new-password").value = "";
+      $("confirm-password").value = "";
+      await supabase.auth.signOut();
+      showLoginView();
+      setStatus("Your password has been updated. Sign in with your new password.");
+    } catch (error) {
+      setStatus("Could not update password: " + getErrorMessage(error));
+    } finally {
+      button.disabled = false;
+    }
   }
 
   function getErrorMessage(error) {
@@ -633,6 +721,20 @@
       );
 
       loginForm.addEventListener("submit", signIn);
+      forgotPasswordForm.addEventListener("submit", requestPasswordReset);
+      updatePasswordForm.addEventListener("submit", updateRecoveredPassword);
+      $("forgot-password-button").addEventListener("click", () => {
+        $("reset-email").value = $("login-email").value.trim();
+        loginPanel.hidden = true;
+        forgotPasswordPanel.hidden = false;
+        updatePasswordPanel.hidden = true;
+        setStatus("Enter your administrator email to receive a secure reset link.");
+      });
+      $("back-to-login-button").addEventListener("click", () => {
+        showLoginView();
+        setStatus("Sign in with your ZIRIGO administrator account.");
+      });
+      setupPasswordVisibility();
       promotionForm.addEventListener("submit", savePromotion);
       $("logout-button").addEventListener("click", signOut);
       $("cancel-edit-button").addEventListener("click", clearForm);
@@ -642,8 +744,15 @@
       setSignedInView(false);
       setStatus("Checking your administrator session…");
 
-      supabase.auth.onAuthStateChange((_event, session) => {
+      supabase.auth.onAuthStateChange((event, session) => {
         setTimeout(() => {
+          if (event === "PASSWORD_RECOVERY") {
+            showPasswordRecoveryView();
+            return;
+          }
+          if (event === "SIGNED_OUT") {
+            showLoginView();
+          }
           checkAdmin(session?.user || null);
         }, 0);
       });
