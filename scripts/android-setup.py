@@ -43,7 +43,10 @@ for density in sizes:
 colors = root / "values"
 colors.mkdir(parents=True, exist_ok=True)
 (colors / "zirigo_launcher_colors.xml").write_text(
-    '<resources><color name="zirigo_launcher_background">#FFFFFF</color></resources>\\n'
+    """<resources>
+  <color name="zirigo_launcher_background">#FFFFFF</color>
+</resources>
+"""
 )
 
 
