@@ -119,9 +119,14 @@
       if (error) throw error;
       $("new-password").value = "";
       $("confirm-password").value = "";
-      await supabase.auth.signOut();
-      showLoginView();
-      setStatus("Your password has been updated. Sign in with your new password.");
+
+      // Keep the verified recovery session alive. Signing out immediately
+      // can race the PASSWORD_RECOVERY auth event and force another login.
+      recoveryMode = false;
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+      await checkAdmin(userData.user);
+      setStatus("Password updated successfully. You are now signed in to ZIRIGO Admin.");
     } catch (error) {
       setStatus("Could not update password: " + getErrorMessage(error));
     } finally {
