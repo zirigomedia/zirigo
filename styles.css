@@ -1345,3 +1345,29 @@ html, body { width:100%; max-width:100%; overflow-x:hidden; }
 @media (max-width: 390px) {
   .download-mark { display: none; }
 }
+
+
+/* ===== ZIRIGO INVITE / SHARE SECTION ===== */
+.invite-section { padding-top: 30px; }
+.invite-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  padding: clamp(24px, 4vw, 42px);
+  border: 1px solid #6f4b1e66;
+  border-radius: 9px;
+  background: radial-gradient(ellipse at 12% 50%, #f6a91a18, transparent 58%), #100f0d;
+}
+.invite-copy { max-width: 620px; }
+.invite-copy .eyebrow { margin-bottom: 10px; }
+.invite-copy h2 { margin: 0 0 12px; }
+.invite-copy p:not(.eyebrow) { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.7; }
+.invite-action { flex: 0 0 auto; text-align: center; }
+.invite-button { border: 0; cursor: pointer; font: inherit; }
+.invite-feedback { min-height: 16px; margin: 10px 0 0; color: var(--gold2); font-size: 11px; }
+@media(max-width:760px) {
+  .invite-card { align-items: flex-start; flex-direction: column; }
+  .invite-action { width: 100%; text-align: left; }
+  .invite-button { justify-content: center; }
+}
