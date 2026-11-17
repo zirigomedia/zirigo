@@ -7,25 +7,26 @@ root = Path("android/app/src/main/res")
 icon_source_path = Path("assets/zirigo-logo.png")
 source = Image.open(icon_source_path if icon_source_path.exists() else "assets/icon-512.png").convert("RGBA")
 
-# Generate correctly sized launcher icons for every Android density.
+# Generate launcher icons with a white field and generous safe margins.
+# Keep the full supplied logo visible inside Android's circular/squircle masks.
 sizes = {"mdpi":48,"hdpi":72,"xhdpi":96,"xxhdpi":144,"xxxhdpi":192}
 for density, size in sizes.items():
     folder = root / f"mipmap-{density}"
     folder.mkdir(parents=True, exist_ok=True)
     canvas = Image.new("RGBA", (size, size), (255,255,255,255))
-    logo = ImageOps.contain(source, (int(size*.96), int(size*.96)))
+    logo = ImageOps.contain(source, (int(size*.72), int(size*.72)), method=Image.Resampling.LANCZOS)
     canvas.alpha_composite(logo, ((size-logo.width)//2, (size-logo.height)//2))
     canvas.save(folder / "ic_launcher.png")
     canvas.save(folder / "ic_launcher_round.png")
 
-# Adaptive launcher icon for Android 8+.
+# Adaptive launcher icon for Android 8+: white background, logo kept
+# within the central safe zone so launcher masks cannot cut off its edges.
 folder = root / "mipmap-anydpi-v26"
 folder.mkdir(parents=True, exist_ok=True)
 foreground = Image.new("RGBA", (432,432), (0,0,0,0))
-logo = ImageOps.contain(source, (396,396))
+logo = ImageOps.contain(source, (280,280), method=Image.Resampling.LANCZOS)
 foreground.alpha_composite(logo, ((432-logo.width)//2, (432-logo.height)//2))
 foreground.save(root / "mipmap-xxxhdpi" / "ic_launcher_foreground.png")
-# Also store the foreground in the resource root so all density variants resolve.
 for density in sizes:
     d = root / f"mipmap-{density}"
     d.mkdir(parents=True, exist_ok=True)
@@ -34,15 +35,15 @@ for density in sizes:
     fg.save(d / "ic_launcher_foreground.png")
 
 (folder / "ic_launcher.xml").write_text(
-    '<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n'
-    '  <background android:drawable="@color/zirigo_launcher_background"/>\n'
-    '  <foreground android:drawable="@mipmap/ic_launcher_foreground"/>\n'
-    '</adaptive-icon>\n'
+    '<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\\n'
+    '  <background android:drawable="@color/zirigo_launcher_background"/>\\n'
+    '  <foreground android:drawable="@mipmap/ic_launcher_foreground"/>\\n'
+    '</adaptive-icon>\\n'
 )
 colors = root / "values"
 colors.mkdir(parents=True, exist_ok=True)
 (colors / "zirigo_launcher_colors.xml").write_text(
-    '<resources><color name="zirigo_launcher_background">#FFFFFF</color></resources>\n'
+    '<resources><color name="zirigo_launcher_background">#FFFFFF</color></resources>\\n'
 )
 
 
