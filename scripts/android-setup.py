@@ -35,9 +35,10 @@ for density, size in sizes.items():
 # when transparent. A legacy RGBA PNG lets the transparent pixels stay transparent,
 # like PixelLab's mark-only icon. Do not generate an adaptive-icon XML/background.
 adaptive_dir = root / "mipmap-anydpi-v26"
-adaptive_xml = adaptive_dir / "ic_launcher.xml"
-if adaptive_xml.exists():
-    adaptive_xml.unlink()
+for adaptive_name in ("ic_launcher.xml", "ic_launcher_round.xml"):
+    adaptive_xml = adaptive_dir / adaptive_name
+    if adaptive_xml.exists():
+        adaptive_xml.unlink()
 launcher_colors = root / "values" / "zirigo_launcher_colors.xml"
 if launcher_colors.exists():
     launcher_colors.unlink()
