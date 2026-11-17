@@ -54,28 +54,28 @@ splash_logo.save(drawable / "zirigo_splash_logo.png")
 
 values = root / "values"
 values.mkdir(parents=True, exist_ok=True)
-(values / "zirigo_splash_colors.xml").write_text(
-    '<resources><color name="zirigo_splash_background">#080808</color></resources>\\n'
-)
-(values / "styles.xml").write_text(
-    '<resources>\\n'
-    '  <style name="AppTheme.Splash" parent="AppTheme.NoActionBar">\\n'
-    '    <item name="android:windowBackground">@color/zirigo_splash_background</item>\\n'
-    '  </style>\\n'
-    '</resources>\\n'
-)
+(values / "zirigo_splash_colors.xml").write_text("""<resources>
+  <color name="zirigo_splash_background">#080808</color>
+</resources>
+""")
+(values / "styles.xml").write_text("""<resources>
+  <style name="AppTheme.Splash" parent="AppTheme.NoActionBar">
+    <item name="android:windowBackground">@color/zirigo_splash_background</item>
+  </style>
+</resources>
+""")
 values_v31 = root / "values-v31"
 values_v31.mkdir(parents=True, exist_ok=True)
-(values_v31 / "styles.xml").write_text(
-    '<resources>\\n'
-    '  <style name="AppTheme.Splash" parent="AppTheme.NoActionBar">\\n'
-    '    <item name="android:windowSplashScreenBackground">#080808</item>\\n'
-    '    <item name="android:windowSplashScreenAnimatedIcon">@drawable/zirigo_splash_logo</item>\\n'
-    '    <item name="android:windowSplashScreenAnimationDuration">500</item>\\n'
-    '  </style>\\n'
-    '</resources>\\n'
-)
-\n# Configure the WebView viewport, audio autoplay, and a real native orientation bridge.
+(values_v31 / "styles.xml").write_text("""<resources>
+  <style name="AppTheme.Splash" parent="AppTheme.NoActionBar">
+    <item name="android:windowSplashScreenBackground">#080808</item>
+    <item name="android:windowSplashScreenAnimatedIcon">@drawable/zirigo_splash_logo</item>
+    <item name="android:windowSplashScreenAnimationDuration">500</item>
+  </style>
+</resources>
+""")
+
+# Configure the WebView viewport, audio autoplay, and a real native orientation bridge.
 manifest = Path("android/app/src/main/AndroidManifest.xml")
 tree = ET.parse(manifest)
 manifest_root = tree.getroot()
