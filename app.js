@@ -14,6 +14,9 @@
       window.Capacitor.isNativePlatform());
 
   if (isNativeApp) {
+    // Give the installed APK its own billboard layout hook without changing the website.
+    document.documentElement.classList.add("zirigo-native-app");
+
     const downloadSection = $("download-app");
     const downloadNavLink = document.querySelector(".nav-download");
 
