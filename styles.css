@@ -1409,3 +1409,42 @@ html, body { width:100%; max-width:100%; overflow-x:hidden; }
     min-height: 470px;
   }
 }
+
+
+/* FINAL BILLBOARD POSITIONING: buttons sit immediately above the poster thumbnails. */
+.featured-copy {
+  position: relative;
+  min-height: 370px;
+  padding-bottom: 78px;
+}
+
+.featured-note {
+  position: absolute;
+  left: 0;
+  bottom: 58px;
+  margin: 0 !important;
+}
+
+.featured-actions {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  margin: 0 !important;
+}
+
+@media (max-width: 760px) {
+  .featured-copy {
+    min-height: 420px;
+    padding-bottom: 76px;
+  }
+
+  .featured-copy h2 {
+    font-size: clamp(27px, 7vw, 36px);
+  }
+}
+
+@media (max-width: 420px) {
+  .featured-copy {
+    min-height: 470px;
+  }
+}
