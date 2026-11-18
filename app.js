@@ -775,10 +775,11 @@ const shareButton = $("zirigo-share-button");
 const shareFeedback = $("zirigo-share-feedback");
 
 shareButton?.addEventListener("click", async () => {
-  const shareUrl = window.location.origin + window.location.pathname;
+  // Always share the public website URL, never the local Capacitor WebView origin.
+  const shareUrl = "https://zirigomedia.github.io/zirigo/";
   const shareData = {
     title: "ZIRIGO — Stories That Stay With You",
-    text: "Discover original African stories, films and shorts from ZIRIGO Media.",
+    text: "Discover original African stories, films and shorts from ZIRIGO Media.\n\nVisit ZIRIGO: " + shareUrl,
     url: shareUrl
   };
 
