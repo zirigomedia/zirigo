@@ -29,8 +29,9 @@
   z-index: -2;
   inset: 0;
   background:
-    linear-gradient(90deg, #080807 0%, #080807e8 25%, #08080788 58%, #08080722 100%),
-    linear-gradient(0deg, #080808 0%, transparent 40%);
+    /* Keep the artwork visible while retaining enough contrast for the copy. */
+    linear-gradient(90deg, #08080785 0%, #08080770 25%, #08080738 58%, #08080708 100%),
+    linear-gradient(0deg, #08080878 0%, transparent 48%);
 }
 
 .featured-inner {
