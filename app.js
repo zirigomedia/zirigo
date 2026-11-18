@@ -413,6 +413,42 @@ document.addEventListener("fullscreenchange", () => {
     restartRotation();
   });
 
+  let promotionClient = null;
+  let promotionRefreshInFlight = false;
+
+  async function refreshPromotions() {
+    if (!promotionClient || promotionRefreshInFlight) return;
+    promotionRefreshInFlight = true;
+
+    try {
+      const { data, error } = await promotionClient
+        .from("promotions")
+        .select("id,title,tagline,genre,description,poster_url,trailer_url,release_date,status,is_active,sort_order,created_at")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      const previousId = promotions[currentIndex]?.id;
+      promotions = Array.isArray(data) ? data : [];
+
+      const preservedIndex = previousId
+        ? promotions.findIndex(promo => String(promo.id) === String(previousId))
+        : -1;
+      currentIndex = preservedIndex >= 0 ? preservedIndex : 0;
+
+      renderRail();
+      renderFeatured();
+      restartRotation();
+    } catch (error) {
+      // Keep the last successfully loaded billboard visible during brief network failures.
+      console.warn("Could not refresh Supabase promotions.", error);
+    } finally {
+      promotionRefreshInFlight = false;
+    }
+  }
+
   async function loadPromotions() {
     if (
       !supaCfg.url ||
@@ -425,31 +461,37 @@ document.addEventListener("fullscreenchange", () => {
       return;
     }
 
+    promotionClient = window.supabase.createClient(
+      supaCfg.url,
+      supaCfg.publishableKey
+    );
+
+    await refreshPromotions();
+
+    // Live updates when Supabase Realtime is enabled for the promotions table.
     try {
-      const client = window.supabase.createClient(
-        supaCfg.url,
-        supaCfg.publishableKey
-      );
-
-      const { data, error } = await client
-        .from("promotions")
-        .select("id,title,tagline,genre,description,poster_url,trailer_url,release_date,status,is_active,sort_order,created_at")
-        .eq("is_active", true)
-        .order("sort_order", { ascending: true })
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-
-      promotions = Array.isArray(data) ? data : [];
+      promotionClient
+        .channel("zirigo-promotions-live")
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "promotions" },
+          () => refreshPromotions()
+        )
+        .subscribe();
     } catch (error) {
-      console.warn("Could not load Supabase promotions.", error);
-      promotions = [];
+      console.warn("ZIRIGO live billboard subscription unavailable; polling remains active.", error);
     }
 
-    currentIndex = 0;
-    renderRail();
-    renderFeatured();
-    restartRotation();
+    // Fallback polling ensures updates appear even if Supabase Realtime is not enabled.
+    window.setInterval(refreshPromotions, 30000);
+
+    // Refresh immediately whenever the app returns to the foreground.
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") refreshPromotions();
+    });
+    window.addEventListener("focus", refreshPromotions);
+    window.addEventListener("pageshow", refreshPromotions);
+    window.addEventListener("online", refreshPromotions);
   }
 
   // Latest releases from the YouTube Data API.
