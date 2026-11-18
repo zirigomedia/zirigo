@@ -6,6 +6,27 @@
   const cfg = window.ZIRIGO_CONFIG || {};
   const supaCfg = window.ZIRIGO_SUPABASE || {};
 
+  // Keep app-download promotion on the public website, not inside the installed app.
+  // Shared invitation links still point to the public website for new visitors.
+  const isNativeApp = !!window.ZirigoOrientation ||
+    !!(window.Capacitor &&
+      typeof window.Capacitor.isNativePlatform === "function" &&
+      window.Capacitor.isNativePlatform());
+
+  if (isNativeApp) {
+    const downloadSection = $("download-app");
+    const downloadNavLink = document.querySelector(".nav-download");
+
+    if (downloadSection) {
+      downloadSection.hidden = true;
+      downloadSection.style.setProperty("display", "none", "important");
+    }
+    if (downloadNavLink) {
+      downloadNavLink.hidden = true;
+      downloadNavLink.style.setProperty("display", "none", "important");
+    }
+  }
+
   function escapeHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, char => ({
       "&": "&amp;",
