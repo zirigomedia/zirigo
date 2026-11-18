@@ -676,6 +676,66 @@ const privacyOverlay = $("zirigo-privacy-overlay");
 const privacyOpenButton = $("zirigo-privacy-open");
 const privacyCloseButton = $("zirigo-privacy-close");
 
+// Show the private dashboard entry only after Supabase verifies the
+// signed-in user against the ZIRIGO administrator allow-list.
+const adminSettingsSection = $("zirigo-admin-settings-section");
+
+async function refreshAdminSettingsAccess(client, user) {
+  if (!adminSettingsSection) return;
+  adminSettingsSection.hidden = true;
+  if (!user) return;
+
+  try {
+    const { data, error } = await client
+      .from("zirigo_admins")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (!error && data?.user_id === user.id) {
+      adminSettingsSection.hidden = false;
+    }
+  } catch (_) {
+    adminSettingsSection.hidden = true;
+  }
+}
+
+function initializeAdminSettingsAccess() {
+  if (!adminSettingsSection || !window.supabase ||
+      !supaCfg.url || !supaCfg.publishableKey) return;
+
+  try {
+    const authClient = window.supabase.createClient(
+      supaCfg.url,
+      supaCfg.publishableKey,
+      {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
+      }
+    );
+
+    authClient.auth.onAuthStateChange((event, session) => {
+      setTimeout(() => {
+        refreshAdminSettingsAccess(authClient, session?.user || null);
+      }, 0);
+    });
+
+    authClient.auth.getUser().then(({ data, error }) => {
+      if (!error) refreshAdminSettingsAccess(authClient, data?.user || null);
+    }).catch(() => {
+      adminSettingsSection.hidden = true;
+    });
+  } catch (_) {
+    adminSettingsSection.hidden = true;
+  }
+}
+
+initializeAdminSettingsAccess();
+
+
 function applyZirigoTheme(theme) {
   const selected = theme === "light" ? "light" : "dark";
   document.documentElement.dataset.theme = selected;
