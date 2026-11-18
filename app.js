@@ -682,7 +682,16 @@ const adminSettingsSection = $("zirigo-admin-settings-section");
 
 async function refreshAdminSettingsAccess(client, user) {
   if (!adminSettingsSection) return;
-  adminSettingsSection.hidden = true;
+
+  // The Android WebView has its own secure storage and does not share the
+  // browser's admin session. Show the entry there so the admin can sign in;
+  // admin.html still verifies the account against zirigo_admins.
+  const isNativeApp = !!(window.ZirigoOrientation) ||
+    !!(window.Capacitor &&
+      typeof window.Capacitor.isNativePlatform === "function" &&
+      window.Capacitor.isNativePlatform());
+
+  adminSettingsSection.hidden = !isNativeApp;
   if (!user) return;
 
   try {
@@ -696,7 +705,7 @@ async function refreshAdminSettingsAccess(client, user) {
       adminSettingsSection.hidden = false;
     }
   } catch (_) {
-    adminSettingsSection.hidden = true;
+    adminSettingsSection.hidden = !isNativeApp;
   }
 }
 
