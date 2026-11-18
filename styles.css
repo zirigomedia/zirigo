@@ -1374,3 +1374,38 @@ html, body { width:100%; max-width:100%; overflow-x:hidden; }
   .invite-action { width: 100%; text-align: left; }
   .invite-button { justify-content: center; }
 }
+
+
+/* BILLBOARD SPACING — keep desktop title size; anchor actions near poster rail. */
+.featured-copy {
+  display: flex;
+  flex-direction: column;
+  min-height: 370px;
+}
+
+/* Place the small note above the actions so the buttons sit closest to the thumbnails. */
+.featured-note {
+  order: 2;
+  margin-top: 15px;
+}
+
+.featured-actions {
+  order: 3;
+  margin-top: auto !important;
+}
+
+@media (max-width: 760px) {
+  .featured-copy {
+    min-height: 420px;
+  }
+
+  .featured-copy h2 {
+    font-size: clamp(27px, 7vw, 36px);
+  }
+}
+
+@media (max-width: 420px) {
+  .featured-copy {
+    min-height: 470px;
+  }
+}
