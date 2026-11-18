@@ -1448,3 +1448,42 @@ html, body { width:100%; max-width:100%; overflow-x:hidden; }
     min-height: 470px;
   }
 }
+
+
+/* INSTALLED ZIRIGO APP — billboard layout, isolated from the public website. */
+.zirigo-native-app .featured-copy {
+  position: relative;
+  min-height: 370px;
+  padding-bottom: 78px;
+}
+
+.zirigo-native-app .featured-note {
+  position: absolute;
+  left: 0;
+  bottom: 58px;
+  margin: 0 !important;
+}
+
+.zirigo-native-app .featured-actions {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  margin: 0 !important;
+}
+
+@media (max-width: 760px) {
+  .zirigo-native-app .featured-copy {
+    min-height: 420px;
+    padding-bottom: 76px;
+  }
+
+  .zirigo-native-app .featured-copy h2 {
+    font-size: clamp(27px, 7vw, 36px);
+  }
+}
+
+@media (max-width: 420px) {
+  .zirigo-native-app .featured-copy {
+    min-height: 470px;
+  }
+}
