@@ -363,9 +363,10 @@
   }
 
   .featured-shade {
+    /* Mobile was still applying the old heavy overlay; let the poster artwork show through. */
     background:
-      linear-gradient(90deg, #080807ef 0%, #080807c9 55%, #08080770 100%),
-      linear-gradient(0deg, #080808 0%, transparent 55%);
+      linear-gradient(90deg, #08080766 0%, #0808074d 45%, #0808071a 100%),
+      linear-gradient(0deg, #08080866 0%, transparent 60%);
   }
 
   .featured-copy {
