@@ -1,8 +1,11 @@
-const CACHE_NAME = "zirigo-cache-v11";
+const CACHE_NAME = "zirigo-cache-v12";
 
 const APP_FILES = [
 "./",
 "./index.html",
+"./admin.html",
+"./admin.js",
+"./admin.webmanifest",
 "./styles.css",
 "./app.js",
 "./config.js",
