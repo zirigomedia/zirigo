@@ -7,6 +7,9 @@ on:
       - "package.json"
       - "capacitor.config.json"
       - "index.html"
+      - "admin.html"
+      - "admin.js"
+      - "admin.webmanifest"
       - "styles.css"
       - "app.js"
       - "config.js"
@@ -43,7 +46,7 @@ jobs:
       - name: Prepare ZIRIGO website files
         run: |
           mkdir -p www/assets
-          cp index.html styles.css app.js config.js supabase-config.js manifest.webmanifest www/
+          cp index.html admin.html styles.css app.js admin.js config.js supabase-config.js manifest.webmanifest admin.webmanifest www/
           cp -R assets/. www/assets/
 
       - name: Generate Android project
