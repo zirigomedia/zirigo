@@ -25,7 +25,7 @@ for density, size in sizes.items():
     folder = root / f"mipmap-{density}"
     folder.mkdir(parents=True, exist_ok=True)
     canvas = Image.new("RGBA", (size, size), (0,0,0,0))
-    logo = ImageOps.contain(source, (int(size*.78), int(size*.68)), method=Image.Resampling.LANCZOS)
+    logo = ImageOps.contain(source, (int(size*.90), int(size*.82)), method=Image.Resampling.LANCZOS)
     canvas.alpha_composite(logo, ((size-logo.width)//2, (size-logo.height)//2))
     canvas.save(folder / "ic_launcher.png")
     canvas.save(folder / "ic_launcher_round.png")
