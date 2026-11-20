@@ -1,5 +1,5 @@
 from pathlib import Path
-from PIL import Image, ImageOps, ImageDraw
+from PIL import Image, ImageOps, ImageDraw, ImageChops
 import xml.etree.ElementTree as ET
 ET.register_namespace("android", "http://schemas.android.com/apk/res/android")
 
@@ -19,7 +19,20 @@ def trim_transparent(image):
 
 source = trim_transparent(source)
 
-# Generate transparent launcher icons with generous breathing room around the ZIRIGO mark.
+# The supplied ZIRIGO logo is a wide image with a white canvas around a
+# circular mark. Transparent trimming alone cannot remove that white padding.
+# Detect the non-white artwork and crop to its visible bounds for launcher use.
+rgb = source.convert("RGB")
+white = Image.new("RGB", source.size, (255, 255, 255))
+difference = ImageChops.difference(rgb, white).convert("L")
+artwork_mask = difference.point(lambda pixel: 255 if pixel > 18 else 0)
+artwork_bounds = artwork_mask.getbbox()
+if artwork_bounds:
+    source = source.crop(artwork_bounds)
+
+# Generate transparent launcher icons with the complete circular mark centred
+# and breathing room around it. The splash artwork below continues using the
+# original uncropped source so its appearance is unchanged.
 sizes = {"mdpi":48,"hdpi":72,"xhdpi":96,"xxhdpi":144,"xxxhdpi":192}
 for density, size in sizes.items():
     folder = root / f"mipmap-{density}"
